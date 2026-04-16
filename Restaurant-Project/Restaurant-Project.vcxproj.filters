@@ -39,6 +39,9 @@
     <ClInclude Include="Scooter.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="PrecondViolatedExcep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

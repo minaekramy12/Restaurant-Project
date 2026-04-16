@@ -1,5 +1,6 @@
 
 #include "Node.h"
+#include "PrecondViolatedExcep.h"
 #ifndef _STACK_H_
 #define _STACK_H_
 

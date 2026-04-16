@@ -1,4 +1,5 @@
 #include "Node.h"
+#include "PrecondViolatedExcep.h"
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
 

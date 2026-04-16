@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="Chef.h" />
     <ClInclude Include="Order.h" />
+    <ClInclude Include="PrecondViolatedExcep.h" />
     <ClInclude Include="PriQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Queue.h" />

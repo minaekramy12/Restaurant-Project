@@ -7,8 +7,8 @@ class Scooter
 private:
 	int speed;
 	int ID;
-	int Main_Ords;
-	int Main_Dur;
+	int Main_Ords; //number of orders it can deliver befor needing maintenance
+	int Main_Dur; //maintenance duration 
 	bool inMaintenance;
 	int ordersDoneCount;
 	int backTime;
@@ -25,7 +25,7 @@ public:
 	void setMDur(int mdur) { Main_Dur = mdur; }
 	void setMaintenance(bool m) { inMaintenance = m; }
 	void deliverOrder(Order* ord, int currentTime) {
-		DeliveryOrder* delOrd = dynamic_cast<DeliveryOrder*>(ord);
+		DeliveryOrder* delOrd = dynamic_cast<DeliveryOrder*>(ord); //downcast to make sure its deliverable
 		if (!delOrd) return;
 		currentOrder = (DeliveryOrder*)ord;
 		int dist = delOrd->getDistance();

@@ -1,4 +1,5 @@
 #include "Node.h"
+#include "PrecondViolatedExcep.h"
 #ifndef _PRI_QUEUE_H_
 #define _PRI_QUEUE_H_
 
@@ -52,7 +53,7 @@ public:
 
     T peekFront() const throw(PrecondViolatedExcep) {
         if (isEmpty())
-            throw PrecondViolatedExcep("Priority Queue is empty");;
+            throw PrecondViolatedExcep("Priority Queue is empty");
 
         return head->getItem();
     }
