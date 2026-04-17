@@ -1,8 +1,9 @@
 #include "Node.h"
 #include "PrecondViolatedExcep.h"
+#include <iostream>
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
-
+using std::cout;
 template <typename T>
 class LinkedQueue
 {
@@ -98,13 +99,22 @@ public:
 	{
 		return count;
 	}
-	void Print() const
+	void Print(int limit = -1)
 	{
 		Node<T>* current = frontPtr;
+		int printedCount = 0;
 		while (current)
 		{
-			cout << current->getItem() << endl;
+			if (limit != -1 && printedCount >= limit) {
+				break;
+			}
+			cout << current->getItem();
+			if (current->getNext() != nullptr && (limit == -1 || printedCount < limit - 1)) {
+				cout << ", ";
+			}
+
 			current = current->getNext();
+			printedCount++;
 		}
 	}
 };

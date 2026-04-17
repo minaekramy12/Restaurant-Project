@@ -1,6 +1,10 @@
 #ifndef SCOOTER_H
 #define SCOOTER_H
-#include "Order.h"
+
+#include <iostream>
+
+class Order;
+class DeliveryOrder;
 
 class Scooter
 {
@@ -15,43 +19,25 @@ private:
 	DeliveryOrder* currentOrder;
 	int totalBusyTime;
 public:
-	Scooter(int id, int sp, int cap, int mOrds, int mDur)
-		: ID(id), speed(sp),
-		Main_Ords(mOrds), Main_Dur(mDur),
-		ordersDoneCount(0), backTime(0), inMaintenance(false), currentOrder(nullptr), totalBusyTime(0) {}
+	Scooter(int id, int sp, int cap, int mOrds, int mDur);
+
 	// Setters
-	void setID(int id) { ID = id; }
-	void setMOrders(int morders) { Main_Ords = morders; }
-	void setMDur(int mdur) { Main_Dur = mdur; }
-	void setMaintenance(bool m) { inMaintenance = m; }
-	void deliverOrder(Order* ord, int currentTime) {
-		DeliveryOrder* delOrd = dynamic_cast<DeliveryOrder*>(ord); //downcast to make sure its deliverable
-		if (!delOrd) return;
-		currentOrder = (DeliveryOrder*)ord;
-		int dist = delOrd->getDistance();
-		int tripDuration = dist / speed;
-		if (dist % speed != 0) tripDuration++;
-		totalBusyTime += (2 * tripDuration);
-		ord->setTS(currentTime);
-		ord->setTserv(tripDuration);
-		backTime = currentTime + (2 * tripDuration);
-		ordersDoneCount++;
-		if (ordersDoneCount >= Main_Ords) {
-			inMaintenance = true;
-				backTime += Main_Dur;
-				ordersDoneCount = 0;
-		}
-	}
+	void setID(int id);
+	void setMOrders(int morders);
+	void setMDur(int mdur);
+	void setMaintenance(bool m);
+	void deliverOrder(Order* ord, int currentTime);
+
+	friend std::ostream& operator<<(std::ostream& os, const Scooter* s);
 
 	// Getters
-	int getID() const { return ID; }
-	int getSpeed() const { return speed; }
-	bool getInMaintenance() const { return inMaintenance; }
-	int getBackTime() const { return backTime; }
-	int getTotalBusyTime() const { return totalBusyTime; }
+	int getID() const;
+	int getSpeed() const;
+	bool getInMaintenance() const;
+	int getBackTime() const;
+	int getTotalBusyTime() const;
 
-	~Scooter() {}
+	~Scooter();
 };
-
 
 #endif

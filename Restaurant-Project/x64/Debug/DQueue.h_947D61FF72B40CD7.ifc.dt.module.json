@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\DQueue.obj",
+            "outputs": [
+                "x64\\Debug\\DQueue.h_947D61FF72B40CD7.ifc.dt.module.json",
+                "x64\\Debug\\DQueue.h_947D61FF72B40CD7.ifc.dt.d.json",
+                "x64\\Debug\\DQueue.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\Users\\Kareem\\Desktop\\ds-repo\\Restaurant-Project\\DQueue.h",
+                    "source-path": "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\dqueue.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

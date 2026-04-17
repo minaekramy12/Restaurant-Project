@@ -127,18 +127,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Action.h" />
     <ClInclude Include="Chef.h" />
+    <ClInclude Include="CancellablePriQueue.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="PrecondViolatedExcep.h" />
     <ClInclude Include="PriQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="Restaurant.h" />
     <ClInclude Include="Scooter.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="Table.h" />
+    <ClInclude Include="TablePriQueue.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="Chef.cpp" />
+    <ClCompile Include="CancellableQueue.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Order.cpp" />
+    <ClCompile Include="Restaurant.cpp" />
+    <ClCompile Include="Scooter.cpp" />
+    <ClCompile Include="Table.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

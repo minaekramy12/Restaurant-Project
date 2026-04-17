@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\CancellableQueue.h.obj",
+            "outputs": [
+                "C:\\Users\\Kareem\\Desktop\\ds-repo\\Restaurant-Project\\x64\\Debug\\vc145.pdb",
+                "x64\\Debug\\",
+                "C:\\Users\\Kareem\\Desktop\\ds-repo\\Restaurant-Project\\x64\\Debug\\CancellableQueue.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "CancellableQueue.h",
+                    "source-path": "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\cancellablequeue.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

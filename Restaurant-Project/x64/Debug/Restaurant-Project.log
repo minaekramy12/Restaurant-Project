@@ -1,2 +1,33 @@
-﻿  main.cpp
+﻿  Scanning sources for module dependencies...
+  main.cpp
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(8,7):
+          while compiling class template 'LinkedQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,28): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(9,7):
+          while compiling class template 'priQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,31): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,17): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,17):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(8,7):
+          while compiling class template 'LinkedStack'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,23): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
   Restaurant-Project.vcxproj -> C:\Users\Kareem\Desktop\ds-repo\x64\Debug\Restaurant-Project.exe

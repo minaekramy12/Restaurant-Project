@@ -1,8 +1,24 @@
 #ifndef _ORDER_H_
 #define _ORDER_H_
-#include "Chef.h"
-#include "Table.h"
-#include "Scooter.h"
+
+#include <iostream>
+#include <string>
+
+using std::string;
+
+// Forward declarations
+class Chef;
+class Table;
+class Scooter;
+
+enum OrderState {
+	PENDING,
+	COOKING,
+	READY,
+	IN_SERVICE,
+	FINISHED,
+	CANCELLED
+};
 
 class Order
 {
@@ -16,44 +32,48 @@ private:
 	int Tserv;
 	int size;
 	double price;
+	OrderState status;
 
 public:
-	Order(int id, int tq, int sz, double pr) : ID(id), TQ(tq), size(sz), price(pr),
-		chef(nullptr), Tserv(0), TA(0), TR(0), TS(0) {}
+	Order(int id, int tq, int sz, double pr);
+
 	// Setters
-	void setID(int id) { ID = id; }
-	void setTQ(int tq) { TQ = tq; }
-	void setSize(int sz) { size = sz; }
-	void setPrice(double pr) { price = pr; }
-	void setAssignedChef(Chef* c) { chef = c; }
-	void setTA(int ta) { TA = ta; }
-	void setTR(int tr) { TR = tr; }
-	void setTS(int ts) { TS = ts; }
-	void setTserv(int t) { Tserv = t; }
+	void setID(int id);
+	void setTQ(int tq);
+	void setSize(int sz);
+	void setPrice(double pr);
+	void setAssignedChef(Chef* c);
+	void setTA(int ta);
+	void setTR(int tr);
+	void setTS(int ts);
+	void setTserv(int t);
+	void setStatus(OrderState s);
 
 	// Getters
-	int getID() const { return ID; }
-	int getTQ() const { return TQ; }
-	int getTA() const { return TA; }
-	int getTR() const { return TR; }
-	int getTS() const { return TS; }
-	int getTI() const { return TA - TQ + TS - TR; }
-	int getTC() const { return TR - TA; }
-	int getTW() const { return getTI() + getTC(); }
-	int getTserv() const { return Tserv; }
-	int getTF() const { return TS + Tserv; }
-	int getSize() const { return size; }
-	double getPrice() const { return price; }
-	Chef* getAssignedChef() const { return chef; }
-	virtual double getPriority() const { return -TQ; }
+	int getID() const;
+	int getTQ() const;
+	int getTA() const;
+	int getTR() const;
+	int getTS() const;
+	int getTI() const;
+	int getTC() const;
+	int getTW() const;
+	int getTserv() const;
+	int getTF() const;
+	int getSize() const;
+	double getPrice() const;
+	Chef* getAssignedChef() const;
+	OrderState getStatus() const;
+	virtual double getPriority() const;
 
-	virtual ~Order() {}
+	virtual string GetType() const = 0;
+	virtual Table* getTable() const { return nullptr; }
+	virtual Scooter* getScooter() const { return nullptr; }
+
+	friend std::ostream& operator<<(std::ostream& os, const Order* ord);
+
+	virtual ~Order();
 };
-
-
-
-
-
 
 class DineInOrder : public Order
 {
@@ -63,48 +83,40 @@ private:
 	bool share;
 	Table* table;
 public:
-	DineInOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
-		Order(id, tq, sz, pr), nSeats(seats), duration(dur), share(sh), table(nullptr) {}
+	DineInOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
 	// Setters
-	void setNSeats(int seats) { nSeats = seats; }
-	void setDuration(int dur) { duration = dur; }
-	void setShare(bool sh) { share = sh; }
-	void setTable(Table* tab) { table = tab; }
+	void setNSeats(int seats);
+	void setDuration(int dur);
+	void setShare(bool sh);
+	void setTable(Table* tab);
 
 	// Getters
-	int getNSeats() const { return nSeats; }
-	int getDuration() const { return duration; }
-	bool getShare() const { return share; }
-	Table* getTable() const { return table; }
-
+	int getNSeats() const;
+	int getDuration() const;
+	bool getShare() const;
+	Table* getTable() const;
 };
-
-
 
 class ODGOrder : public DineInOrder
 {
 public:
-	ODGOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
-		DineInOrder (id, tq, sz, pr, seats, dur, sh) {}
+	ODGOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
+	string GetType() const { return "ODG"; }
 };
-
 
 class ODNOrder : public DineInOrder
 {
 public:
-	ODNOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
-		DineInOrder(id, tq, sz, pr, seats, dur, sh) {
-	}
+	ODNOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
+	string GetType() const { return "ODN"; }
 };
-
-
 
 class TakeawayOrder : public Order
 {
 public:
-	TakeawayOrder(int id, int tq, int sz, double pr) : Order(id, tq, sz, pr) {}
+	TakeawayOrder(int id, int tq, int sz, double pr);
+	string GetType() const { return "OT"; }
 };
-
 
 class DeliveryOrder : public Order
 {
@@ -112,38 +124,38 @@ private:
 	double distance;
 	Scooter* scooter;
 public:
-	DeliveryOrder(int id, int tq, int sz, double pr, double dis) :
-		Order(id, tq, sz, pr), distance(dis), scooter(nullptr) {}
+	DeliveryOrder(int id, int tq, int sz, double pr, double dis);
 
 	// Setters
-	void setDistance(double dis) { distance = dis; }
-	void setScooter(Scooter* sc) { scooter = sc; }
-	// Getters
-	double getDistance() const { return distance; }
-	Scooter* getScooter() const { return scooter; }
-};
+	void setDistance(double dis);
+	void setScooter(Scooter* sc);
 
+	// Getters
+	double getDistance() const;
+	Scooter* getScooter() const;
+};
 
 class OVC : public DeliveryOrder
 {
 public:
-	OVC(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}
+	OVC(int id, int tq, int sz, double pr, double dis);
+	string GetType() const { return "OVC"; }
 };
 
 class OVG : public DeliveryOrder
 {
 public:
-	OVG(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}
-
-	double getPriority() const override {
-		double dist = (getDistance() > 0) ? getDistance() : 1.0;
-		return (getPrice() * getSize()) / dist;
-	}
+	OVG(int id, int tq, int sz, double pr, double dis);
+	double getPriority() const
+		;
+	string GetType() const { return "OVG"; }
 };
 
 class OVN : public DeliveryOrder
 {
 public:
-	OVN(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}
+	OVN(int id, int tq, int sz, double pr, double dis);
+	string GetType() const { return "OVN"; }
 };
+
 #endif

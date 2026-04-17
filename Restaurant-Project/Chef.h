@@ -1,7 +1,9 @@
 #ifndef _Chef_H_
 #define _Chef_H_
-#include "Order.h"
 
+#include <iostream>
+
+class Order;
 
 class Chef
 {
@@ -14,48 +16,39 @@ private:
 	int totalBusyTime;
 
 public:
-	Chef(int id, int spd) : speed(spd), currOrder(nullptr), ID(id), isBusy(false), TF(0), totalBusyTime(0) {}
+	Chef(int id, int spd);
+
 	// Setters
-	void setID(int id) { ID = id; }
-	void setSpeed(int spd) { speed = spd; }
-	void setBusy(bool busy) { isBusy = busy; }
-	void setTF(int tf) { TF = tf; }
-	void setAvailable() { isBusy = false; currOrder = nullptr; TF = 0; }
-	void assignOrder(Order* ord, int currentTime) {
-		currOrder = ord;
-		isBusy = true;
-		int cookDuration = ord->getSize() / speed;
-		if (ord->getSize() % speed != 0) cookDuration++;
-		totalBusyTime += cookDuration;
-		ord->setTA(currentTime);
-		ord->setTR(currentTime + cookDuration);
-		ord->setAssignedChef(this);
+	void setID(int id);
+	void setSpeed(int spd);
+	void setBusy(bool busy);
+	void setTF(int tf);
+	void setAvailable();
+	void assignOrder(Order* ord, int currentTime);
 
-		TF = ord->getTR();
-	}
-
+	friend std::ostream& operator<<(std::ostream& os, const Chef* c);
 
 	// Getters
-	int getSpeed() const { return speed; }
-	Order* getCurrentOrder() const { return currOrder; }
-	int getID() const { return ID; }
-	bool getBusy() const { return isBusy; }
-	int getTF() const { return TF; }
-	int getTotalBusyTime() const { return totalBusyTime; }
+	int getSpeed() const;
+	Order* getCurrentOrder() const;
+	int getID() const;
+	bool getBusy() const;
+	int getTF() const;
+	int getTotalBusyTime() const;
 
-	virtual ~Chef() {}
+	virtual ~Chef();
 };
 
 class CS : public Chef
 {
 public:
-	CS(int id, int spd) : Chef(id, spd) {}
+	CS(int id, int spd);
 };
 
 class CN : public Chef
 {
 public:
-	CN(int id, int spd) : Chef(id, spd) {}
+	CN(int id, int spd);
 };
 
-#endif 
+#endif

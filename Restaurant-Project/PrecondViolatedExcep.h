@@ -7,7 +7,7 @@ private:
 public:
     explicit PrecondViolatedExcep(const std::string& msg) : message(msg) {}
 
-    virtual const char* what() const noexcept override {
+    virtual const char* what() const noexcept {
         return message.c_str();
     }
 };

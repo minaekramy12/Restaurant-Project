@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\CancellableQueue.obj",
+            "outputs": [
+                "x64\\Debug\\CancellableQueue.h_7FDF8A337E578E71.ifc.dt.module.json",
+                "x64\\Debug\\CancellableQueue.h_7FDF8A337E578E71.ifc.dt.d.json",
+                "x64\\Debug\\CancellableQueue.h.ifc"
+            ],
+            "provides": [
+                {
+                    "logical-name": "C:\\Users\\Kareem\\Desktop\\ds-repo\\Restaurant-Project\\CancellableQueue.h",
+                    "source-path": "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\cancellablequeue.h",
+                    "lookup-method": "absolute"
+                }
+            ],
+            "requires": []
+        }
+    ]
+}

@@ -4,7 +4,6 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-
 template<typename T>
 class LinkedStack
 {
@@ -88,7 +87,10 @@ public:
 		Node<T>* current = topPtr;
 		while (current)
 		{
-			cout << current->getItem() << endl;
+			cout << current->getItem();
+			if (current->getNext() != nullptr) {
+				cout << ", ";
+			}
 			current = current->getNext();
 		}
 	}

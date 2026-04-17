@@ -5,47 +5,91 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Entities">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Support">
+      <UniqueIdentifier>{75b8a9d7-fd52-4770-9956-3bc71a1102aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ADTs">
+      <UniqueIdentifier>{d78e6312-bdc1-4f56-9068-d7adb99b7aa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core &amp; UI">
+      <UniqueIdentifier>{7b3e49af-d5a8-47b2-9880-2e1b7fd0cdff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PriQueue.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Stack.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Queue.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="Order.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Chef.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Table.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="Scooter.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Entities</Filter>
     </ClInclude>
     <ClInclude Include="PrecondViolatedExcep.h">
-      <Filter>Header Files</Filter>
+      <Filter>Support</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>ADTs</Filter>
+    </ClInclude>
+    <ClInclude Include="Queue.h">
+      <Filter>ADTs</Filter>
+    </ClInclude>
+    <ClInclude Include="PriQueue.h">
+      <Filter>ADTs</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>ADTs</Filter>
+    </ClInclude>
+    <ClInclude Include="Restaurant.h">
+      <Filter>Core &amp; UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Core &amp; UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Action.h">
+      <Filter>Core &amp; UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CancellablePriQueue.h">
+      <Filter>ADTs</Filter>
+    </ClInclude>
+    <ClInclude Include="TablePriQueue.h">
+      <Filter>ADTs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Chef.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Order.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Scooter.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Table.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Restaurant.cpp">
+      <Filter>Core &amp; UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Core &amp; UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Action.cpp">
+      <Filter>Core &amp; UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CancellableQueue.h">
+      <Filter>ADTs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

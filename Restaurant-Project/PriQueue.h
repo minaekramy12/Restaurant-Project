@@ -1,7 +1,9 @@
 #include "Node.h"
 #include "PrecondViolatedExcep.h"
+#include <iostream>
 #ifndef _PRI_QUEUE_H_
 #define _PRI_QUEUE_H_
+using std::cout;
 
 template <typename T>
 class priQueue
@@ -69,7 +71,11 @@ public:
         priNode<T>*current = head;
         while (current)
         {
-            cout << current->getItem() << endl;
+            double p;
+            cout << current->getItem(p);
+            if (current->getNext() != nullptr) {
+                cout << ", ";
+            }
             current = current->getNext();
         }
     }

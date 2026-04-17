@@ -1,0 +1,1582 @@
+______________Restaurant-Project\Action.cpp_______________________ 
+#include "Action.h"
+#include "Order.h"
+#include "Restaurant.h"
+
+void RequestAction::Execute(Restaurant* pRest) {
+    // Phase 2 Logic: 
+    // Create the appropriate Order object (DineInOrder, TakeawayOrder, DeliveryOrder)
+    // based on 'orderType' and add it to the correct Pending Queue in the Restaurant.
+}
+
+void CancelAction::Execute(Restaurant* pRest) {
+    // Phase 2 Logic: 
+    // Search the OVC pending and cooking queues for 'orderID'.
+    // If pending/ready -> Drop it.
+    // If cooking -> Stop cooking, drop order, and free the Chef.
+} 
+______________Restaurant-Project\Action.h_______________________ 
+#ifndef _ACTION_H_
+#define _ACTION_H_
+
+#include <iostream>
+#include <string>
+
+class Restaurant;
+
+using std::string;
+
+class Action {
+protected:
+	int timestep;
+	int orderID;
+
+public:
+	Action(int time, int id) : timestep(time), orderID(id) {}
+	virtual ~Action() {}
+
+	// Getters
+	int getTimestep() const { return timestep; }
+	int getOrderID() const { return orderID; }
+
+	virtual void Execute(Restaurant* pRest) = 0;
+	virtual void print(std::ostream& os) const = 0;
+	friend std::ostream& operator<<(std::ostream& os, const Action* act) {
+		if (!act) return os;
+		act->print(os);
+
+		return os;
+	}
+};
+
+class RequestAction : public Action {
+private:
+	string orderType; //"ODG" "ODN" "OT" "OVC" "OVG" "OVN"
+	int size;
+	double price;
+
+	//for dine-in
+	int seats;
+	int duration;
+	bool canShare;
+
+	//for delivery
+	double distance;
+
+public:
+	//ODG, ODN
+	RequestAction(int time, int id, string type, int sz, double pr, int s, int dur, bool share)
+		: Action(time, id), orderType(type), size(sz), price(pr), seats(s), duration(dur), canShare(share), distance(0) {
+	}
+
+	//OVC, OVG, OVN
+	RequestAction(int time, int id, string type, int sz, double pr, double dist)
+		: Action(time, id), orderType(type), size(sz), price(pr), seats(0), duration(0), canShare(false), distance(dist) {
+	}
+
+	//OT
+	RequestAction(int time, int id, string type, int sz, double pr)
+		: Action(time, id), orderType(type), size(sz), price(pr), seats(0), duration(0), canShare(false), distance(0) {
+	}
+	virtual void Execute(Restaurant* pRest) override;
+	virtual void print(std::ostream& os) const {
+		os << "[" << orderType << ", " << timestep << ", " << orderID << "]";
+	}
+};
+
+class CancelAction : public Action {
+public:
+	CancelAction(int time, int id) : Action(time, id) {}
+	virtual void Execute(Restaurant* pRest) override;
+	//(X, Tcancel, order ID)
+	virtual void print(std::ostream& os) const override {
+		os << "(X, " << timestep << ", " << orderID << ")";
+	}
+};
+
+#endif 
+______________Restaurant-Project\Chef.cpp_______________________ 
+#include "Chef.h"
+#include "Order.h"
+
+Chef::Chef(int id, int spd) : speed(spd), currOrder(nullptr), ID(id), isBusy(false), TF(0), totalBusyTime(0) {}
+
+// Setters
+void Chef::setID(int id) { ID = id; }
+void Chef::setSpeed(int spd) { speed = spd; }
+void Chef::setBusy(bool busy) { isBusy = busy; }
+void Chef::setTF(int tf) { TF = tf; }
+void Chef::setAvailable() { isBusy = false; currOrder = nullptr; TF = 0; }
+
+void Chef::assignOrder(Order* ord, int currentTime) {
+	currOrder = ord;
+	isBusy = true;
+	int cookDuration = ord->getSize() / speed;
+	if (ord->getSize() % speed != 0) cookDuration++;
+	totalBusyTime += cookDuration;
+	ord->setTA(currentTime);
+	ord->setTR(currentTime + cookDuration);
+	ord->setAssignedChef(this);
+
+	TF = ord->getTR();
+}
+
+std::ostream& operator<<(std::ostream& os, const Chef* c) {
+	if (!c) return os;
+	os << c->ID;
+	return os;
+}
+
+// Getters
+int Chef::getSpeed() const { return speed; }
+Order* Chef::getCurrentOrder() const { return currOrder; }
+int Chef::getID() const { return ID; }
+bool Chef::getBusy() const { return isBusy; }
+int Chef::getTF() const { return TF; }
+int Chef::getTotalBusyTime() const { return totalBusyTime; }
+
+Chef::~Chef() {}
+
+CS::CS(int id, int spd) : Chef(id, spd) {}
+
+CN::CN(int id, int spd) : Chef(id, spd) {} 
+______________Restaurant-Project\Chef.h_______________________ 
+#ifndef _Chef_H_
+#define _Chef_H_
+
+#include <iostream>
+
+class Order;
+
+class Chef
+{
+private:
+	int speed;
+	int ID;
+	Order* currOrder;
+	bool isBusy;
+	int TF;
+	int totalBusyTime;
+
+public:
+	Chef(int id, int spd);
+
+	// Setters
+	void setID(int id);
+	void setSpeed(int spd);
+	void setBusy(bool busy);
+	void setTF(int tf);
+	void setAvailable();
+	void assignOrder(Order* ord, int currentTime);
+
+	friend std::ostream& operator<<(std::ostream& os, const Chef* c);
+
+	// Getters
+	int getSpeed() const;
+	Order* getCurrentOrder() const;
+	int getID() const;
+	bool getBusy() const;
+	int getTF() const;
+	int getTotalBusyTime() const;
+
+	virtual ~Chef();
+};
+
+class CS : public Chef
+{
+public:
+	CS(int id, int spd);
+};
+
+class CN : public Chef
+{
+public:
+	CN(int id, int spd);
+};
+
+#endif 
+______________Restaurant-Project\main.cpp_______________________ 
+#include "Restaurant.h"
+
+int main() {
+	Restaurant* pRest = new Restaurant();
+	pRest->RunSimulation();
+
+	delete pRest;
+	return 0;
+} 
+______________Restaurant-Project\Node.h_______________________ 
+
+#ifndef NODE_H
+#define NODE_H
+
+template<typename T>
+class Node
+{
+private:
+	T item;
+	Node<T>* next;
+public:
+
+	Node()
+	{
+		next = nullptr;
+	}
+
+	Node(T newItem)
+	{
+		item = newItem;
+		next = nullptr;
+
+	}
+
+	void setItem(T newItem)
+	{
+		item = newItem;
+	}
+
+	void setNext(Node<T>* nextNodePtr)
+	{
+		next = nextNodePtr;
+	}
+
+	T getItem() const
+	{
+		return item;
+	}
+
+	Node<T>* getNext() const
+	{
+		return next;
+	}
+	virtual ~Node() {}
+};
+
+
+template < typename T>
+class priNode
+{
+private:
+	T item;
+	double pri;
+	priNode<T>* next;
+public:
+	priNode(const T& r_Item, double PRI)
+	{
+		setItem(r_Item, PRI);
+		next = nullptr;
+	}
+	void setItem(const T& r_Item, double PRI)
+	{
+		item = r_Item;
+		pri = PRI;
+	}
+	void setNext(priNode<T>* nextNodePtr)
+	{
+		next = nextNodePtr;
+	}
+
+	T getItem(double& PRI) const
+	{
+		PRI = pri;
+		return item;
+	}
+
+	priNode<T>* getNext() const
+	{
+		return next;
+	}
+
+	int getPri() const
+	{
+		return pri;
+	}
+};
+
+
+
+#endif 
+______________Restaurant-Project\Order.cpp_______________________ 
+#include "Order.h"
+#include "Chef.h"
+#include "Table.h"
+#include "Scooter.h"
+
+Order::Order(int id, int tq, int sz, double pr) : ID(id), TQ(tq), size(sz), price(pr),
+chef(nullptr), Tserv(0), TA(0), TR(0), TS(0), status(PENDING) {
+}
+
+// Setters
+void Order::setID(int id) { ID = id; }
+void Order::setTQ(int tq) { TQ = tq; }
+void Order::setSize(int sz) { size = sz; }
+void Order::setPrice(double pr) { price = pr; }
+void Order::setAssignedChef(Chef* c) { chef = c; }
+void Order::setTA(int ta) { TA = ta; }
+void Order::setTR(int tr) { TR = tr; }
+void Order::setTS(int ts) { TS = ts; }
+void Order::setTserv(int t) { Tserv = t; }
+void Order::setStatus(OrderState s) { status = s; }
+
+// Getters
+int Order::getID() const { return ID; }
+int Order::getTQ() const { return TQ; }
+int Order::getTA() const { return TA; }
+int Order::getTR() const { return TR; }
+int Order::getTS() const { return TS; }
+int Order::getTI() const { return TA - TQ + TS - TR; }
+int Order::getTC() const { return TR - TA; }
+int Order::getTW() const { return getTI() + getTC(); }
+int Order::getTserv() const { return Tserv; }
+int Order::getTF() const { return TS + Tserv; }
+int Order::getSize() const { return size; }
+double Order::getPrice() const { return price; }
+Chef* Order::getAssignedChef() const { return chef; }
+double Order::getPriority() const { return -TQ; }
+OrderState Order::getStatus() const { return status; }
+
+std::ostream& operator<<(std::ostream& os, const Order* ord) {
+	if (!ord) return os;
+
+	switch (ord->status) {
+	case IN_SERVICE:
+	{
+		if (const DineInOrder* dineIn = dynamic_cast<const DineInOrder*>(ord)) {
+			os << "[" << ord->ID << ", T";
+			if (dineIn->getTable()) os << dineIn->getTable()->getID();
+			os << "]";
+		}
+		else if (const DeliveryOrder* delivery = dynamic_cast<const DeliveryOrder*>(ord)) {
+			os << "[" << ord->ID << ", S";
+			if (delivery->getScooter()) os << delivery->getScooter()->getID();
+			os << "]";
+		}
+		break;
+	}
+	case COOKING:
+	{
+		os << "[" << ord->ID << ", ";
+		if (ord->chef) os << ord->chef->getID();
+		os << "]";
+		break;
+	}
+	default:
+	{
+		os << ord->ID;
+		break;
+	}
+	}
+	return os;
+}
+
+Order::~Order() {}
+
+DineInOrder::DineInOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
+	Order(id, tq, sz, pr), nSeats(seats), duration(dur), share(sh), table(nullptr) {
+}
+
+// Setters
+void DineInOrder::setNSeats(int seats) { nSeats = seats; }
+void DineInOrder::setDuration(int dur) { duration = dur; }
+void DineInOrder::setShare(bool sh) { share = sh; }
+void DineInOrder::setTable(Table* tab) { table = tab; }
+
+// Getters
+int DineInOrder::getNSeats() const { return nSeats; }
+int DineInOrder::getDuration() const { return duration; }
+bool DineInOrder::getShare() const { return share; }
+Table* DineInOrder::getTable() const { return table; }
+
+ODGOrder::ODGOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
+	DineInOrder(id, tq, sz, pr, seats, dur, sh) {
+}
+
+ODNOrder::ODNOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh) :
+	DineInOrder(id, tq, sz, pr, seats, dur, sh) {
+}
+
+TakeawayOrder::TakeawayOrder(int id, int tq, int sz, double pr) : Order(id, tq, sz, pr) {}
+
+DeliveryOrder::DeliveryOrder(int id, int tq, int sz, double pr, double dis) :
+	Order(id, tq, sz, pr), distance(dis), scooter(nullptr) {
+}
+
+// Setters
+void DeliveryOrder::setDistance(double dis) { distance = dis; }
+void DeliveryOrder::setScooter(Scooter* sc) { scooter = sc; }
+
+// Getters
+double DeliveryOrder::getDistance() const { return distance; }
+Scooter* DeliveryOrder::getScooter() const { return scooter; }
+
+OVC::OVC(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}
+
+OVG::OVG(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}
+
+double OVG::getPriority() const {
+	double dist = (getDistance() > 0) ? getDistance() : 1.0;
+	return (getPrice() * getSize()) / dist;
+}
+
+OVN::OVN(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {} 
+______________Restaurant-Project\Order.h_______________________ 
+#ifndef _ORDER_H_
+#define _ORDER_H_
+
+#include <iostream>
+
+// Forward declarations
+class Chef;
+class Table;
+class Scooter;
+
+enum OrderState {
+	PENDING,
+	COOKING,
+	READY,
+	IN_SERVICE,
+	FINISHED,
+	CANCELLED
+};
+
+class Order
+{
+private:
+	Chef* chef;
+	int ID;
+	int TQ;
+	int TA;
+	int TR;
+	int TS;
+	int Tserv;
+	int size;
+	double price;
+	OrderState status;
+
+public:
+	Order(int id, int tq, int sz, double pr);
+	// Setters
+	void setID(int id);
+	void setTQ(int tq);
+	void setSize(int sz);
+	void setPrice(double pr);
+	void setAssignedChef(Chef* c);
+	void setTA(int ta);
+	void setTR(int tr);
+	void setTS(int ts);
+	void setTserv(int t);
+	void setStatus(OrderState s);
+
+	// Getters
+	int getID() const;
+	int getTQ() const;
+	int getTA() const;
+	int getTR() const;
+	int getTS() const;
+	int getTI() const;
+	int getTC() const;
+	int getTW() const;
+	int getTserv() const;
+	int getTF() const;
+	int getSize() const;
+	double getPrice() const;
+	Chef* getAssignedChef() const;
+	virtual double getPriority() const;
+	OrderState getStatus() const;
+
+	friend std::ostream& operator<<(std::ostream& os, const Order* ord);
+
+	virtual ~Order();
+};
+
+class DineInOrder : public Order
+{
+private:
+	int nSeats;
+	int duration;
+	bool share;
+	Table* table;
+public:
+	DineInOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
+	// Setters
+	void setNSeats(int seats);
+	void setDuration(int dur);
+	void setShare(bool sh);
+	void setTable(Table* tab);
+
+	// Getters
+	int getNSeats() const;
+	int getDuration() const;
+	bool getShare() const;
+	Table* getTable() const;
+};
+
+class ODGOrder : public DineInOrder
+{
+public:
+	ODGOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
+};
+
+class ODNOrder : public DineInOrder
+{
+public:
+	ODNOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
+};
+
+class TakeawayOrder : public Order
+{
+public:
+	TakeawayOrder(int id, int tq, int sz, double pr);
+};
+
+class DeliveryOrder : public Order
+{
+private:
+	double distance;
+	Scooter* scooter;
+public:
+	DeliveryOrder(int id, int tq, int sz, double pr, double dis);
+
+	// Setters
+	void setDistance(double dis);
+	void setScooter(Scooter* sc);
+	// Getters
+	double getDistance() const;
+	Scooter* getScooter() const;
+};
+
+class OVC : public DeliveryOrder
+{
+public:
+	OVC(int id, int tq, int sz, double pr, double dis);
+};
+
+class OVG : public DeliveryOrder
+{
+public:
+	OVG(int id, int tq, int sz, double pr, double dis);
+	double getPriority() const override;
+};
+
+class OVN : public DeliveryOrder
+{
+public:
+	OVN(int id, int tq, int sz, double pr, double dis);
+};
+
+#endif 
+______________Restaurant-Project\PrecondViolatedExcep.h_______________________ 
+#pragma once
+#include <exception>
+#include <string>
+class PrecondViolatedExcep : public std::exception {
+private:
+    std::string message;
+public:
+    explicit PrecondViolatedExcep(const std::string& msg) : message(msg) {}
+
+    virtual const char* what() const noexcept override {
+        return message.c_str();
+    }
+};
+ 
+______________Restaurant-Project\PriQueue.h_______________________ 
+#include "Node.h"
+#include "PrecondViolatedExcep.h"
+#include <iostream>
+#ifndef _PRI_QUEUE_H_
+#define _PRI_QUEUE_H_
+using std::cout;
+
+template <typename T>
+class priQueue
+{
+private:
+    priNode<T>* head;
+    int count;
+public:
+    priQueue() : head(nullptr), count(0) {}
+
+    ~priQueue() {
+        T tmp;
+        double p;
+        while (dequeue(tmp, p));
+    }
+
+    bool enqueue(const T& data, double priority) {
+        priNode<T>* newNode = new priNode<T>(data, priority);
+
+        if (head == nullptr || priority > head->getPri()) {
+
+            newNode->setNext(head);
+            head = newNode;
+            count++;
+            return true;
+        }
+
+        priNode<T>* current = head;
+        while (current->getNext() && priority <= current->getNext()->getPri()) {
+            current = current->getNext();
+        }
+        newNode->setNext(current->getNext());
+        current->setNext(newNode);
+        count++;
+        return true;
+    }
+
+    bool dequeue(T& topEntry, double& pri) {
+        if (isEmpty())
+            return false;
+
+        topEntry = head->getItem(pri);
+        priNode<T>* temp = head;
+        head = head->getNext();
+        delete temp;
+        count--;
+        return true;
+    }
+
+    T peekFront() const throw(PrecondViolatedExcep) {
+        if (isEmpty())
+            throw PrecondViolatedExcep("Priority Queue is empty");
+
+        return head->getItem();
+    }
+
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    int getCount() const { return count; }
+
+    void Print() const
+    {
+        priNode<T>*current = head;
+        while (current)
+        {
+            double p;
+            cout << current->getItem(p) << std::endl;
+            current = current->getNext();
+        }
+    }
+};
+
+
+#endif 
+______________Restaurant-Project\Queue.h_______________________ 
+#include "Node.h"
+#include "PrecondViolatedExcep.h"
+#include <iostream>
+#ifndef _QUEUE_H_
+#define _QUEUE_H_
+using std::cout;
+template <typename T>
+class LinkedQueue
+{
+private:
+	Node<T>* backPtr;
+	Node<T>* frontPtr;
+	int count;
+public:
+	LinkedQueue()
+	{
+		backPtr = nullptr;
+		frontPtr = nullptr;
+		count = 0;
+	}
+
+	LinkedQueue(const LinkedQueue& aQueue)
+	{
+		count = aQueue.count;
+		Node<T>* nodePtr = aQueue.frontPtr;
+		if (nodePtr == nullptr)
+		{
+			frontPtr = nullptr;
+			backPtr = nullptr;
+		}
+		else
+		{
+			frontPtr = new Node<T>();
+			frontPtr->setItem(nodePtr->getItem());
+			Node<T>* newNodePtr = frontPtr;
+			nodePtr = nodePtr->getNext();
+			while (nodePtr != nullptr)
+			{
+				Node<T>* nextNodePtr = new Node<T>();
+				nextNodePtr->setItem(nodePtr->getItem());
+				newNodePtr->setNext(nextNodePtr);
+				newNodePtr = nextNodePtr;
+				nodePtr = nodePtr->getNext();
+			}
+			backPtr = newNodePtr;
+			backPtr->setNext(nullptr);
+		}
+	}
+	~LinkedQueue()
+	{
+		while (!isEmpty())
+			dequeue();
+	}
+	bool isEmpty() const
+	{
+		return (frontPtr == nullptr);
+	}
+
+	bool enqueue(const T& newEntry)
+	{
+		Node<T>* newNodePtr = new Node<T>(newEntry);
+		if (isEmpty())
+			frontPtr = newNodePtr;
+		else
+			backPtr->setNext(newNodePtr);
+		backPtr = newNodePtr;
+		count++;
+		return true;
+	}
+
+	bool dequeue()
+	{
+		bool result = false;
+		if (!isEmpty())
+		{
+			Node<T>* nodeToDeletePtr = frontPtr;
+			if (frontPtr == backPtr)
+			{
+				frontPtr = nullptr;
+				backPtr = nullptr;
+			}
+			else
+				frontPtr = frontPtr->getNext();
+			nodeToDeletePtr->setNext(nullptr);
+			delete nodeToDeletePtr;
+			nodeToDeletePtr = nullptr;
+			result = true;
+			count--;
+		}
+		return result;
+	}
+	T peekFront() const throw(PrecondViolatedExcep)
+	{
+		if (isEmpty())
+			throw PrecondViolatedExcep("Queue is empty");
+		return frontPtr->getItem();
+	}
+	int getCount() const
+	{
+		return count;
+	}
+	void Print(int limit = -1)
+	{
+		Node<T>* current = frontPtr;
+		int printedCount = 0;
+		while (current)
+		{
+			if (limit != -1 && printedCount >= limit) {
+				break;
+			}
+			cout << current->getItem();
+			if (current->getNext() != nullptr && (limit == -1 || printedCount < limit - 1)) {
+				cout << ", ";
+			}
+
+			current = current->getNext();
+			printedCount++;
+		}
+	}
+};
+#endif _QUEUE_H_ 
+______________Restaurant-Project\Restaurant.cpp_______________________ 
+#include "Restaurant.h"
+
+Restaurant::Restaurant() {
+	pUI = new UI();
+	currentTimestep = 1;
+}
+
+void Restaurant::RunSimulation() {
+	pUI->printMessage("Welcome to the Restaurant Simulation!");
+
+	// 1. Get input file and load it
+	string inputFile = pUI->readInputFileName();
+	LoadFromFile(inputFile);
+
+	// 2. Get Simulation Mode
+	SimulationMode mode = pUI->readSimulationMode();
+
+	// 3. Main Simulation Loop
+	while (!actionList.isEmpty() /* || !pendTakeaway.isEmpty() ... (Add other conditions later) */) {
+
+		if (mode != SILENT) {
+			pUI->printTimestep(currentTimestep);
+		}
+
+		// Phase 2 Logic will go here:
+		// 1. Execute actions for the current timestep
+		// 2. Check if chefs finished cooking -> move to ready queue
+		// 3. Check if ready orders can be served -> move to in-service
+		// 4. Check if scooters/tables are done -> free them up
+
+		// For now (Phase 1.2), we just print the status of the queues
+		if (mode != SILENT) {
+			pUI->printSystemStatus(
+				&actionList,
+				&pendTakeaway, &pendODN, &pendODG,
+				&pendOVC, &pendOVG, &pendOVN,
+				&availCS, &availCN,
+				&cookingOrders,
+				&readyTakeaway, &readyDineIn, &readyDelivery,
+				&availScooters,
+				&availTables,
+				&inServiceOrders,
+				&inMaintenanceScooters,
+				&scootersBack,
+				&cancelledOrders,
+				&finishedOrders
+			);
+
+			if (mode == INTERACTIVE) {
+				pUI->waitForUser();
+			}
+		}
+
+		currentTimestep++;
+	}
+
+	pUI->printMessage("Simulation Complete!");
+	// pUI->readOutputFileName(); // For Phase 2 Output File
+}
+
+void Restaurant::LoadFromFile(string filename) {
+	ifstream inFile(filename);
+
+	if (!inFile.is_open()) {
+		pUI->printMessage("Error: Could not open the input file " + filename);
+		return;
+	}
+
+	// ========================================================
+	// 1. Read Chefs (Lines 1 & 2)
+	// Example: 25 13 (num CS, num CN)
+	//          3 2   (speed CS, speed CN)
+	// ========================================================
+	int numCS, numCN;
+	inFile >> numCS >> numCN;
+
+	int speedCS, speedCN;
+	inFile >> speedCS >> speedCN;
+
+	int chefID = 1;
+	for (int i = 0; i < numCS; i++) {
+		availCS.enqueue(new CS(chefID++, speedCS));
+	}
+	for (int i = 0; i < numCN; i++) {
+		availCN.enqueue(new CN(chefID++, speedCN));
+	}
+
+	// ========================================================
+	// 2. Read Scooters (Lines 3 & 4)
+	// Example: 20 150 (num scooters, speed)
+	//          8 23   (maintainance orders, maintainance duration)
+	// ========================================================
+	int numScooters, speedScooter;
+	inFile >> numScooters >> speedScooter;
+
+	int mOrds, mDur;
+	inFile >> mOrds >> mDur;
+
+	for (int i = 0; i < numScooters; i++) {
+		// NOTE: I am passing 1 for "capacity" here to match your current Scooter constructor.
+		// If you removed capacity from your Scooter class, just delete the `1,`.
+		availScooters.enqueue(new Scooter(i + 1, speedScooter, 1, mOrds, mDur));
+	}
+
+	// ========================================================
+	// 3. Read Tables (Lines 5 & 6)
+	// Example: 20 (Total Tables)
+	//          5 3 2 4 7 5 6 8 (5 tables of 3 seats, 2 of 4, etc.)
+	// ========================================================
+	int numTablesTotal;
+	inFile >> numTablesTotal;
+
+	int tablesCreated = 0;
+	int tableID = 1;
+
+	// Loop until we have created the total number of tables specified
+	while (tablesCreated < numTablesTotal) {
+		int count, capacity;
+		inFile >> count >> capacity;
+
+		for (int i = 0; i < count; i++) {
+			availTables.enqueue(new Table(tableID++, capacity));
+			tablesCreated++;
+		}
+	}
+
+	// ========================================================
+	// 4. Read Actions (Line 7 and below)
+	// Example: 800 (Total Actions)
+	//          Q ODG 7 1 15 110 4 14 Y
+	//          X 15 2
+	// ========================================================
+	int numActions;
+	inFile >> numActions;
+
+	for (int i = 0; i < numActions; i++) {
+		char actionType;
+		inFile >> actionType;
+
+		// --- REQUEST ACTION (Q) ---
+		if (actionType == 'Q' || actionType == 'R') {
+			string orderType; // "ODG", "OVC", etc.
+			int TS, ID, size;
+			double money;
+
+			// Read common variables
+			inFile >> orderType >> TS >> ID >> size >> money;
+
+			// Dine-In Orders (Need to handle 'Y'/'N' for sharing)
+			if (orderType == "ODG" || orderType == "ODN") {
+				int seats, duration;
+				char shareChar;
+				inFile >> seats >> duration >> shareChar;
+
+				// Convert 'Y' or 'N' to boolean
+				bool share = (shareChar == 'Y' || shareChar == 'y');
+
+				actionList.enqueue(new RequestAction(TS, ID, orderType, size, money, seats, duration, share));
+			}
+			// Delivery Orders
+			else if (orderType == "OVC" || orderType == "OVG" || orderType == "OVN") {
+				double distance;
+				inFile >> distance;
+				actionList.enqueue(new RequestAction(TS, ID, orderType, size, money, distance));
+			}
+			// Takeaway Orders
+			else if (orderType == "OT") {
+				actionList.enqueue(new RequestAction(TS, ID, orderType, size, money));
+			}
+		}
+		// --- CANCEL ACTION (X) ---
+		else if (actionType == 'X') {
+			int TS, ID;
+			inFile >> TS >> ID;
+			actionList.enqueue(new CancelAction(TS, ID));
+		}
+	}
+
+	inFile.close();
+	pUI->printMessage("File Loaded Successfully!");
+}
+
+Restaurant::~Restaurant() {
+	delete pUI;
+
+} 
+______________Restaurant-Project\Restaurant.h_______________________ 
+#ifndef __RESTAURANT_H_
+#define __RESTAURANT_H_
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+//DS
+#include "Queue.h"
+#include "PriQueue.h"
+
+//Classes
+#include "Order.h"
+#include "Chef.h"
+#include "Scooter.h"
+#include "Table.h"
+#include "Action.h"
+#include "UI.h"
+
+using namespace std;
+
+class Restaurant {
+private:
+	UI* pUI;
+	int currentTimestep;
+
+	//Actions Queue
+	LinkedQueue<Action*> actionList;
+
+	//Pending Orders
+	LinkedQueue<Order*> pendTakeaway;
+	LinkedQueue<Order*> pendODN;
+	priQueue<Order*> pendODG;    // PQ ODG
+	LinkedQueue<Order*> pendOVC;
+	priQueue<Order*> pendOVG;    // PQ OVG
+	LinkedQueue<Order*> pendOVN;
+
+	//Resources Queues
+	LinkedQueue<Chef*> availCS;
+	LinkedQueue<Chef*> availCN;
+	LinkedQueue<Scooter*> availScooters;
+	LinkedQueue<Table*> availTables;
+
+	//In-Progress
+	LinkedQueue<Order*> cookingOrders;
+
+	//Ready Orders Queues
+	LinkedQueue<Order*> readyTakeaway;
+	LinkedQueue<Order*> readyDineIn;
+	LinkedQueue<Order*> readyDelivery;
+
+	//In-Service & Finished Queues
+	LinkedQueue<Order*> inServiceOrders;
+	LinkedQueue<Scooter*> inMaintenanceScooters;
+	LinkedQueue<Scooter*> scootersBack;
+	LinkedQueue<Order*> cancelledOrders;
+	LinkedQueue<Order*> finishedOrders;
+
+public:
+	Restaurant();
+	~Restaurant();
+
+	// Main Simulation Loop
+	void RunSimulation();
+
+	// File Handling
+	void LoadFromFile(string filename);
+
+	// Utility Functions for Actions to use (Phase 2)
+	// e.g., void AddToPending(Order* pOrd);
+	// e.g., Order* GetOrderById(int id);
+};
+
+#endif 
+______________Restaurant-Project\Scooter.cpp_______________________ 
+#include "Scooter.h"
+#include "Order.h"
+
+Scooter::Scooter(int id, int sp, int cap, int mOrds, int mDur)
+	: ID(id), speed(sp),
+	Main_Ords(mOrds), Main_Dur(mDur),
+	ordersDoneCount(0), backTime(0), inMaintenance(false), currentOrder(nullptr), totalBusyTime(0) {
+}
+
+// Setters
+void Scooter::setID(int id) { ID = id; }
+void Scooter::setMOrders(int morders) { Main_Ords = morders; }
+void Scooter::setMDur(int mdur) { Main_Dur = mdur; }
+void Scooter::setMaintenance(bool m) { inMaintenance = m; }
+
+void Scooter::deliverOrder(Order* ord, int currentTime) {
+	DeliveryOrder* delOrd = dynamic_cast<DeliveryOrder*>(ord); //downcast to make sure its deliverable
+	if (!delOrd) return;
+	currentOrder = (DeliveryOrder*)ord;
+	int dist = delOrd->getDistance();
+	int tripDuration = dist / speed;
+	if (dist % speed != 0) tripDuration++;
+	totalBusyTime += (2 * tripDuration);
+	ord->setTS(currentTime);
+	ord->setTserv(tripDuration);
+	backTime = currentTime + (2 * tripDuration);
+	ordersDoneCount++;
+	if (ordersDoneCount >= Main_Ords) {
+		inMaintenance = true;
+		backTime += Main_Dur;
+		ordersDoneCount = 0;
+	}
+}
+
+std::ostream& operator<<(std::ostream& os, const Scooter* s) {
+	if (!s) return os;
+	os << s->ID;
+	return os;
+}
+
+// Getters
+int Scooter::getID() const { return ID; }
+int Scooter::getSpeed() const { return speed; }
+bool Scooter::getInMaintenance() const { return inMaintenance; }
+int Scooter::getBackTime() const { return backTime; }
+int Scooter::getTotalBusyTime() const { return totalBusyTime; }
+
+Scooter::~Scooter() {} 
+______________Restaurant-Project\Scooter.h_______________________ 
+#ifndef SCOOTER_H
+#define SCOOTER_H
+
+#include <iostream>
+
+class Order;
+class DeliveryOrder;
+
+class Scooter
+{
+private:
+	int speed;
+	int ID;
+	int Main_Ords; //number of orders it can deliver befor needing maintenance
+	int Main_Dur; //maintenance duration 
+	bool inMaintenance;
+	int ordersDoneCount;
+	int backTime;
+	DeliveryOrder* currentOrder;
+	int totalBusyTime;
+public:
+	Scooter(int id, int sp, int cap, int mOrds, int mDur);
+
+	// Setters
+	void setID(int id);
+	void setMOrders(int morders);
+	void setMDur(int mdur);
+	void setMaintenance(bool m);
+	void deliverOrder(Order* ord, int currentTime);
+
+	friend std::ostream& operator<<(std::ostream& os, const Scooter* s);
+
+	// Getters
+	int getID() const;
+	int getSpeed() const;
+	bool getInMaintenance() const;
+	int getBackTime() const;
+	int getTotalBusyTime() const;
+
+	~Scooter();
+};
+
+#endif 
+______________Restaurant-Project\Stack.h_______________________ 
+
+#include "Node.h"
+#include "PrecondViolatedExcep.h"
+#ifndef _STACK_H_
+#define _STACK_H_
+
+
+template<typename T>
+class LinkedStack
+{
+private:
+	Node<T>* topPtr;
+	int count;
+public:
+	LinkedStack()
+	{
+		topPtr = nullptr;
+		count = 0;
+	}
+	LinkedStack(const LinkedStack& aStack)
+	{
+		count = aStack.count;
+		Node<T>* nodePtr = aStack.topPtr;
+		if (nodePtr == nullptr)
+			topPtr = nullptr;
+		else
+		{
+			topPtr = new Node<T>();
+			topPtr->setItem(nodePtr->getItem());
+			Node<T>* newNodePtr = topPtr;
+			nodePtr = nodePtr->getNext();
+			while (nodePtr != nullptr)
+			{
+				Node<T>* nextNodePtr = new Node<T>();
+				nextNodePtr->setItem(nodePtr->getItem());
+				newNodePtr->setNext(nextNodePtr);
+				newNodePtr = nextNodePtr;
+				nodePtr = nodePtr->getNext();
+			}
+			newNodePtr->setNext(nullptr);
+		}
+	}
+	~LinkedStack()
+	{
+		while (!isEmpty())
+			pop();
+	}
+	bool isEmpty() const
+	{
+		return (topPtr == nullptr);
+	}
+	bool push(const T& newEntry)
+	{
+		Node<T>* newNodePtr = new Node<T>(newEntry);
+		newNodePtr->setNext(topPtr);
+		topPtr = newNodePtr;
+		newNodePtr = nullptr;
+		count++;
+		return true;
+	}
+	bool pop()
+	{
+		bool result = false;
+		if (!isEmpty())
+		{
+			Node<T>* nodeToDeletePtr = topPtr;
+			topPtr = topPtr->getNext();
+			nodeToDeletePtr->setNext(nullptr);
+			delete nodeToDeletePtr;
+			nodeToDeletePtr = nullptr;
+			result = true;
+			count--;
+		}
+		return result;
+	}
+	T peak() const throw(PrecondViolatedExcep)
+	{
+		if (isEmpty())
+			throw PrecondViolatedExcep("Stack is empty");
+		return topPtr->getItem();
+	}
+	int getCount() const
+	{
+		return count;
+	}
+	void Print() const
+	{
+		Node<T>* current = topPtr;
+		while (current)
+		{
+			cout << current->getItem() << endl;
+			current = current->getNext();
+		}
+	}
+};
+
+#endif 
+______________Restaurant-Project\Table.cpp_______________________ 
+#include "Table.h"
+#include "Order.h"
+
+Table::Table(int id, int cap) { capacity = cap; freeSeats = cap; ID = id; order = nullptr; isShared = false; }
+
+bool Table::canFit(int nSeats) const { return freeSeats >= nSeats; }
+
+void Table::addOrder(DineInOrder* ord)
+{
+	Node<DineInOrder*>* temp = new Node<DineInOrder*>(ord);
+	temp->setNext(order);
+	order = temp;
+}
+
+Node<DineInOrder*>* Table::hasOrder(DineInOrder* ord, Node<DineInOrder*>*& prevPtr) const
+{
+	Node<DineInOrder*>* current = order;
+	prevPtr = nullptr;
+	while (current != nullptr)
+	{
+		if (current->getItem() == ord) return current;
+		prevPtr = current;
+		current = current->getNext();
+	}
+	return nullptr;
+}
+
+bool Table::deleteOrder(DineInOrder* ord)
+{
+	Node<DineInOrder*>* prevPtr = nullptr;
+	Node<DineInOrder*>* deleteNode = hasOrder(ord, prevPtr);
+	if (deleteNode)
+	{
+		if (deleteNode == order) {
+			order = deleteNode->getNext();
+			delete deleteNode;
+			deleteNode = nullptr;
+			return true;
+		}
+		prevPtr->setNext(deleteNode->getNext());
+		delete deleteNode;
+		deleteNode = nullptr;
+		return true;
+	}
+	return false;
+}
+
+void Table::deleteAllOrders()
+{
+	Node<DineInOrder*>* current = order;
+	while (current != nullptr)
+	{
+		Node<DineInOrder*>* temp = current;
+		current = current->getNext();
+		delete temp;
+		temp = nullptr;
+	}
+	order = nullptr;
+}
+
+// Setters
+void Table::setCapacity(int cap) { capacity = cap; }
+void Table::setFreeSeats(int free) { freeSeats = free; }
+void Table::setID(int id) { ID = id; }
+void Table::setShared(bool shared) { isShared = shared; }
+
+bool Table::reserveTable(DineInOrder* ord, int nSeats, bool shared)
+{
+	if (!canFit(nSeats)) return false;
+	freeSeats -= nSeats;
+	setShared(shared);
+	addOrder(ord);
+	return true;
+}
+
+void Table::setTableFree()
+{
+	freeSeats = capacity;
+	isShared = false;
+	deleteAllOrders();
+}
+
+bool Table::finishOrder(DineInOrder* ord)
+{
+	if (deleteOrder(ord))
+	{
+		freeSeats += ord->getNSeats();
+		if (freeSeats == capacity) isShared = false;
+		return true;
+	}
+	return false;
+}
+
+std::ostream& operator<<(std::ostream& os, const Table* t) {
+	if (!t) return os;
+	os << "[T" << t->ID << ", " << t->capacity << ", " << t->freeSeats << "]";
+	return os;
+}
+
+// Getters
+int Table::getCapacity() const { return capacity; }
+int Table::getFreeSeats() const { return freeSeats; }
+int Table::getID() const { return ID; }
+bool Table::isFull() const { return freeSeats == capacity; }
+bool Table::getShared() const { return isShared; }
+
+Table::~Table() { deleteAllOrders(); } 
+______________Restaurant-Project\Table.h_______________________ 
+#ifndef _Table_H_
+#define _Table_H_
+
+#include <iostream>
+#include "Node.h"
+
+class DineInOrder;
+
+class Table
+{
+private:
+	int capacity;
+	int freeSeats;
+	int ID;
+	bool isShared;
+	Node<DineInOrder*>* order;
+
+	bool canFit(int nSeats) const;
+	void addOrder(DineInOrder* ord);
+	Node<DineInOrder*>* hasOrder(DineInOrder* ord, Node<DineInOrder*>*& prevPtr) const;
+	bool deleteOrder(DineInOrder* ord);
+	void deleteAllOrders();
+
+public:
+	Table(int id, int cap);
+
+	// Setters
+	void setCapacity(int cap);
+	void setFreeSeats(int free);
+	void setID(int id);
+	void setShared(bool shared);
+
+	bool reserveTable(DineInOrder* ord, int nSeats, bool shared);
+	void setTableFree();
+	bool finishOrder(DineInOrder* ord);
+
+	friend std::ostream& operator<<(std::ostream& os, const Table* t);
+
+	// Getters
+	int getCapacity() const;
+	int getFreeSeats() const;
+	int getID() const;
+	bool isFull() const;
+	bool getShared() const;
+
+	~Table();
+};
+
+#endif 
+______________Restaurant-Project\UI.cpp_______________________ 
+#include "UI.h"
+
+string UI::readInputFileName() {
+	string filename;
+	cout << "\nPlease enter the input file name: ";
+	cin >> filename;
+	return filename;
+}
+
+string UI::readOutputFileName() {
+	string filename;
+	cout << "\nPlease enter the output file name: ";
+	cin >> filename;
+	return filename;
+}
+
+SimulationMode UI::readSimulationMode() {
+	int mode = -1;
+	while (mode != 1 || mode != 2) {
+		cout << "\nSelect Simulation Mode:"
+			<< "\n1. Interactive Mode"
+			<< "\n2. Silent Mode"
+			<< "\nEnter choice (1 OR 2): ";
+		cin >> mode;
+	}
+	return static_cast<SimulationMode>(mode);
+}
+
+void UI::printTimestep(int timestep) {
+	cout << "\n=========== Current Timestep: " << timestep << " ===========" << endl;
+}
+
+void UI::printMessage(string msg) {
+	cout << msg << endl;
+}
+
+void UI::waitForUser() {
+	cout << "PRESS ANY KEY TO MOVE TO NEXT..." << endl;
+	cin.ignore();
+	cin.get();
+}
+void UI::clearScreen() {
+	cout << "\033[2J\033[H";
+}
+void UI::printSystemStatus(
+	LinkedQueue<Action*>* actionList,
+	LinkedQueue<Order*>* pendTakeaway, LinkedQueue<Order*>* pendODN, priQueue<Order*>* pendODG,
+	LinkedQueue<Order*>* pendOVC, priQueue<Order*>* pendOVG, LinkedQueue<Order*>* pendOVN,
+	LinkedQueue<Chef*>* availCS, LinkedQueue<Chef*>* availCN,
+	LinkedQueue<Order*>* cookingOrders,
+	LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, LinkedQueue<Order*>* readyDelivery,
+	LinkedQueue<Scooter*>* availScooters,
+	LinkedQueue<Table*>* availTables,
+	LinkedQueue<Order*>* inServiceOrders,
+	LinkedQueue<Scooter*>* inMaintenanceScooters,
+	LinkedQueue<Scooter*>* scootersBack,
+	LinkedQueue<Order*>* cancelledOrders,
+	LinkedQueue<Order*>* finishedOrders)
+{
+	//Actions
+	cout << actionList->getCount() << " actions remaining: ";
+	actionList->Print(10);
+	cout << endl;
+
+	//Pending Orders
+	cout << "Pending Orders IDs" << endl;
+	cout << pendTakeaway->getCount() << " Takeaway: "; pendTakeaway->Print(); cout << endl;
+	cout << pendODN->getCount() << " ODN: "; pendODN->Print(); cout << endl;
+	cout << pendODG->getCount() << " ODG: "; pendODG->Print(); cout << endl;
+	cout << pendOVC->getCount() << " OVC: "; pendOVC->Print(); cout << endl;
+	cout << pendOVG->getCount() << " OVG: "; pendOVG->Print(); cout << endl;
+	cout << pendOVN->getCount() << " OVN: "; pendOVN->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Available Chefs
+	cout << "Available chefs IDs" << endl;
+	cout << availCS->getCount() << " CS: "; availCS->Print(); cout << endl;
+	cout << availCN->getCount() << " CN: "; availCN->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Cooking Orders
+	cout << "Cooking orders [Orders ID, chef ID]" << endl;
+	cout << cookingOrders->getCount() << " cooking orders: "; cookingOrders->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Ready Orders
+	cout << "Ready Orders IDs" << endl;
+	cout << readyTakeaway->getCount() << " Takeaway: "; readyTakeaway->Print(); cout << endl;
+	cout << readyDineIn->getCount() << " Dine-In: "; readyDineIn->Print(); cout << endl;
+	cout << readyDelivery->getCount() << " Delivery: "; readyDelivery->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Avail Scooters
+	cout << "Available scooters IDs" << endl;
+	cout << availScooters->getCount() << " Scooters: "; availScooters->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Avail tables
+	cout << "Available tables [ID, capacity, free seats]" << endl;
+	cout << availTables->getCount() << " tables: "; availTables->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//In-Service
+	cout << "In-Service orders [order ID, scooter/Table ID]" << endl;
+	cout << inServiceOrders->getCount() << " Orders: "; inServiceOrders->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Scooters Maintenance
+	cout << "In-maintainance scooters IDs" << endl;
+	cout << inMaintenanceScooters->getCount() << " scooters: "; inMaintenanceScooters->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Scooters Back
+	cout << "Scooters Back to Restaurant IDs" << endl;
+	cout << scootersBack->getCount() << " scooters: "; scootersBack->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//Cancelled
+	cout << "Cancelled Orders IDs" << endl;
+	cout << cancelledOrders->getCount() << " cancelled: "; cancelledOrders->Print(); cout << endl;
+	cout << "---------------------------------" << endl;
+
+	//finished
+	cout << "Finished orders IDs----" << endl;
+	cout << finishedOrders->getCount() << " Orders: "; finishedOrders->Print(); cout << endl;
+}
+ 
+______________Restaurant-Project\UI.h_______________________ 
+#ifndef _UI_H_
+#define _UI_H_
+
+#include <iostream>
+#include <string>
+
+#include "Queue.h"
+#include "PriQueue.h"
+#include "Order.h"
+#include "Chef.h"
+#include "Scooter.h"
+#include "Table.h"
+#include "Action.h"
+
+
+using std::cout, std::cin, std::string, std::endl;
+
+enum SimulationMode {
+	INTERACTIVE = 1,
+	SILENT = 2
+};
+class UI {
+public:
+	UI() {}
+
+	//Input
+	string readInputFileName();
+	string readOutputFileName();
+	SimulationMode readSimulationMode();
+
+	//Output
+	void printTimestep(int timestep);
+	void waitForUser();
+	void clearScreen();
+	void printMessage(string msg);
+	void printSystemStatus(
+		LinkedQueue<Action*>* actionList,
+		LinkedQueue<Order*>* pendTakeaway, LinkedQueue<Order*>* pendODN, priQueue<Order*>* pendODG,
+		LinkedQueue<Order*>* pendOVC, priQueue<Order*>* pendOVG, LinkedQueue<Order*>* pendOVN,
+		LinkedQueue<Chef*>* availCS, LinkedQueue<Chef*>* availCN,
+		LinkedQueue<Order*>* cookingOrders,
+		LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, LinkedQueue<Order*>* readyDelivery,
+		LinkedQueue<Scooter*>* availScooters,
+		LinkedQueue<Table*>* availTables,
+		LinkedQueue<Order*>* inServiceOrders,
+		LinkedQueue<Scooter*>* inMaintenanceScooters,
+		LinkedQueue<Scooter*>* scootersBack,
+		LinkedQueue<Order*>* cancelledOrders,
+		LinkedQueue<Order*>* finishedOrders
+	);
+
+	~UI() {}
+};
+
+#endif 
