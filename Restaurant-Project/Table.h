@@ -42,6 +42,7 @@ public:
 	int getID() const;
 	bool isFull() const;
 	bool getShared() const;
+	double getPriority() const;
 
 	~Table();
 };

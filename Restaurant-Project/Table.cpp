@@ -103,5 +103,8 @@ int Table::getFreeSeats() const { return freeSeats; }
 int Table::getID() const { return ID; }
 bool Table::isFull() const { return freeSeats == capacity; }
 bool Table::getShared() const { return isShared; }
+double Table::getPriority() const { return -freeSeats; }
+
+
 
 Table::~Table() { deleteAllOrders(); }
