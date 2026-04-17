@@ -62,12 +62,24 @@ public:
 	Restaurant();
 	~Restaurant();
 
+	void RandomSimulation();
 	void RunSimulation();
 	bool LoadFromFile(string filename);
+	void SaveOutput(string filename);
 
 	void ExecuteEvents();
 	void AddToPending(Order* pOrd);
 	void CancelOVC(int id);
+
+	// manage functions
+	void AssignOrders();
+	void FinishCooking();
+	void ServeOrders();
+	void FinishOrders();
+	void ReturnScooters();
+
+	void ExtractAndMoveTable(Table* pTable, bool isShared);
+	bool IsSimulationComplete() const;
 };
 
 #endif

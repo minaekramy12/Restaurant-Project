@@ -15,7 +15,7 @@ public:
             T temp;
             double pri;
             this->dequeue(temp, pri);
-            if (!found && temp->GetAvailableSeats() >= requiredSeats) {
+            if (!found && temp->getFreeSeats() >= requiredSeats) {
                 bestTable = temp;
                 found = true;
             }
@@ -26,8 +26,10 @@ public:
         }
         while (!tempQueue.isEmpty()) {
             T t; double p;
-            tempQueue.dequeue(t);
-            tempPriQueue.dequeue(p);
+            t = tempQueue.peekFront();
+            p = tempPriQueue.peekFront();
+            tempQueue.dequeue();
+            tempPriQueue.dequeue();
             this->enqueue(t, p);
         }
         return found;

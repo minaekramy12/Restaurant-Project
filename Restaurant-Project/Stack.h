@@ -72,7 +72,7 @@ public:
 		}
 		return result;
 	}
-	T peak() const throw(PrecondViolatedExcep)
+	T top() const throw(PrecondViolatedExcep)
 	{
 		if (isEmpty())
 			throw PrecondViolatedExcep("Stack is empty");

@@ -56,8 +56,8 @@ public:
     T peekFront() const throw(PrecondViolatedExcep) {
         if (isEmpty())
             throw PrecondViolatedExcep("Priority Queue is empty");
-
-        return head->getItem();
+        double val;
+        return head->getItem(val);
     }
 
     bool isEmpty() const {

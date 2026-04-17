@@ -18,11 +18,12 @@ string UI::readOutputFileName() {
 
 SimulationMode UI::readSimulationMode() {
 	int mode = -1;
-	while (mode != 1 && mode != 2) {
+	while (mode < 0 || mode > 2) {
 		cout << "\nSelect Simulation Mode:"
+			<< "\n0. Random"
 			<< "\n1. Interactive Mode"
 			<< "\n2. Silent Mode"
-			<< "\nEnter choice (1 OR 2): ";
+			<< "\nEnter choice (0, 1 OR 2): ";
 		cin >> mode;
 	}
 	return static_cast<SimulationMode>(mode);

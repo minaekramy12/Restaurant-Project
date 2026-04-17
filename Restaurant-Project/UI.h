@@ -20,6 +20,7 @@
 using std::cout, std::cin, std::string, std::endl;
 
 enum SimulationMode {
+	RANDOM = 0,
 	INTERACTIVE = 1,
 	SILENT = 2
 };

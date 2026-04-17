@@ -141,8 +141,8 @@ set /a size=!RANDOM! %% 10 + 1
 set /a money=!RANDOM! %% 300 + 50
 set /a typeRand=!RANDOM! %% 6
 
-set /a diff=!maxTableCap! - !minTableCap! + 1
-set /a seats=!RANDOM! %% !diff! + !minTableCap!
+:: FIX: Order seats are now directly bounded by maxTableCap (1 to maxTableCap)
+set /a seats=!RANDOM! %% !maxTableCap! + 1
 
 set /a dur=!RANDOM! %% 20 + 10
 
