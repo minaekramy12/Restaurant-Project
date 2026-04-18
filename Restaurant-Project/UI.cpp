@@ -24,9 +24,48 @@ SimulationMode UI::readSimulationMode() {
 			<< "\n1. Interactive Mode"
 			<< "\n2. Silent Mode"
 			<< "\nEnter choice (0, 1 OR 2): ";
-		cin >> mode;
+
+		if (!(cin >> mode)) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			mode = -1;
+		}
 	}
 	return static_cast<SimulationMode>(mode);
+}
+
+int UI::UIMenuRandom(int& totalOrdersGenerated)
+{
+	int modeChoice = -1;
+	while (totalOrdersGenerated < 500) {
+		cout << "\nEnter total number of orders (must be >= 500): ";
+		if (!(cin >> totalOrdersGenerated)) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			totalOrdersGenerated = 0;
+			cout << "Invalid input! Please enter a number.\n";
+			continue;
+		}
+		if (totalOrdersGenerated < 500) {
+			cout << "Orders must be at least 500!\n";
+		}
+	}
+
+	while (modeChoice != 1 && modeChoice != 2) {
+		cout << "\nSelect Simulation Mode:" << endl;
+		cout << "1. Step-by-Step\n";
+		cout << "2. Final Output\n";
+		cout << "Enter choice (1 or 2): ";
+
+		if (!(cin >> modeChoice)) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			modeChoice = -1;
+			cout << "Invalid input! Please enter a number.\n";
+			continue;
+		}
+	}
+	return modeChoice;
 }
 
 void UI::printTimestep(int timestep) {
@@ -53,7 +92,7 @@ void UI::printSystemStatus(
 	CancellableQueue<Order*>* pendOVC, priQueue<Order*>* pendOVG, LinkedQueue<Order*>* pendOVN,
 	LinkedQueue<Chef*>* availCS, LinkedQueue<Chef*>* availCN,
 	CancellablePriQueue<Order*>* cookingOrders,
-	LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, CancellableQueue<Order*>* readyDelivery,
+	LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, CancellableQueue<Order*>* readyOVC, LinkedQueue<Order*>* readyOVG, LinkedQueue<Order*>* readyOVN,
 	priQueue<Scooter*>* availScooters,
 	TablePriQueue<Table*>* availTables, TablePriQueue<Table*>* busySharable, TablePriQueue<Table*>* busyNoShare,
 	priQueue<Order*>* inServiceOrders,
@@ -87,7 +126,9 @@ void UI::printSystemStatus(
 	cout << "Ready Orders IDs" << endl;
 	cout << readyTakeaway->getCount() << " Takeaway: "; readyTakeaway->Print(); cout << endl;
 	cout << readyDineIn->getCount() << " Dine-In: "; readyDineIn->Print(); cout << endl;
-	cout << readyDelivery->getCount() << " Delivery: "; readyDelivery->Print(); cout << endl;
+	cout << readyOVC->getCount() << " OVC: "; readyOVC->Print(); cout << endl;
+	cout << readyOVG->getCount() << " OVG: "; readyOVG->Print(); cout << endl;
+	cout << readyOVN->getCount() << " OVN: "; readyOVN->Print(); cout << endl;
 	cout << "---------------------------------" << endl;
 
 	cout << "Available scooters IDs" << endl;

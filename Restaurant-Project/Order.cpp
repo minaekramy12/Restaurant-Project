@@ -112,7 +112,8 @@ OVG::OVG(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, 
 
 double OVG::getPriority() const {
 	double dist = (getDistance() > 0) ? getDistance() : 1.0;
-	return (getPrice() * getSize()) / dist;
+	int TC = (getTC() > 0) ? getTC() : 1;
+	return (getPrice() * getSize()) / (dist * TC);
 }
 
 OVN::OVN(int id, int tq, int sz, double pr, double dis) : DeliveryOrder(id, tq, sz, pr, dis) {}

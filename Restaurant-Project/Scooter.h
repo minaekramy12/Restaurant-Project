@@ -19,11 +19,12 @@ private:
 	int ID;
 	int Main_Ords; //number of orders it can deliver befor needing maintenance
 	int Main_Dur; //maintenance duration 
-	bool inMaintenance;
 	int ordersDoneCount;
+	int totalDistance;
 	int backTime;
 	DeliveryOrder* currentOrder;
 	int totalBusyTime;
+	int maintenanceFinishTime;
 	ScooterState state;
 public:
 	Scooter(int id, int sp, int cap, int mOrds, int mDur);
@@ -32,7 +33,9 @@ public:
 	void setID(int id);
 	void setMOrders(int morders);
 	void setMDur(int mdur);
-	void setMaintenance(bool m);
+	void setMaintenance(int curTime);
+	void setAvailable();
+	void setBack();
 	void deliverOrder(Order* ord, int currentTime);
 	void setState(ScooterState s);
 
@@ -41,11 +44,10 @@ public:
 	// Getters
 	int getID() const;
 	int getSpeed() const;
-	bool getInMaintenance() const;
 	int getBackTime() const;
 	int getTotalBusyTime() const;
 	ScooterState getState() const;
-	double getPriority(DeliveryOrder* ord) const;
+	double getPriority() const;
 
 	~Scooter();
 };

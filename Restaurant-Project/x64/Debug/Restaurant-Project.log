@@ -1,4 +1,98 @@
 ﻿  Scanning sources for module dependencies...
+  Action.cpp
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(8,7):
+          while compiling class template 'LinkedQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,28): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(9,7):
+          while compiling class template 'priQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,31): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(8,7):
+          while compiling class template 'LinkedStack'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'Action.cpp')
+  
+  main.cpp
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(8,7):
+          while compiling class template 'LinkedQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,28): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(9,7):
+          while compiling class template 'priQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,31): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(8,7):
+          while compiling class template 'LinkedStack'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'main.cpp')
+  
+  RandomSimulation.cpp
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(8,7):
+          while compiling class template 'LinkedQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,28): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(9,7):
+          while compiling class template 'priQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,31): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(8,7):
+          while compiling class template 'LinkedStack'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'RandomSimulation.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\RandomSimulation.cpp(6,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Restaurant.cpp
 C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
   (compiling source file 'Restaurant.cpp')
@@ -30,52 +124,36 @@ C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16): warning C5040
 C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
   (compiling source file 'Restaurant.cpp')
   
-C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Restaurant.cpp(118,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Node.h(84,10): warning C4244: 'return': conversion from 'const double' to 'int', possible loss of data
-  (compiling source file 'Restaurant.cpp')
-      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Node.h(84,10):
+  UI.cpp
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,22):
       the template instantiation context (the oldest one first) is
-          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\TablePriQueue.h(7,30):
-          see reference to class template instantiation 'priQueue<T>' being compiled
-          with
-          [
-              T=Table *
-          ]
-          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(44,10):
-          while compiling class template member function 'bool priQueue<T>::dequeue(T &,double &)'
-          with
-          [
-              T=Table *
-          ]
-              C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Restaurant.cpp(105,2):
-              see the first reference to 'priQueue<T>::dequeue' in 'Restaurant::~Restaurant'
-          with
-          [
-              T=Table *
-          ]
-          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(48,20):
-          see reference to class template instantiation 'priNode<T>' being compiled
-          with
-          [
-              T=Table *
-          ]
-          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Node.h(82,6):
-          while compiling class template member function 'int priNode<T>::getPri(void) const'
-          with
-          [
-              T=Table *
-          ]
-              C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(26,9):
-              see the first reference to 'priNode<T>::getPri' in 'priQueue<T>::enqueue'
-          with
-          [
-              T=Table *
-          ]
-              C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Restaurant.cpp(131,51):
-              see the first reference to 'priQueue<T>::enqueue' in 'Restaurant::RandomSimulation'
-          with
-          [
-              T=Table *
-          ]
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(8,7):
+          while compiling class template 'LinkedQueue'
   
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Queue.h(92,28): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,25):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(9,7):
+          while compiling class template 'priQueue'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\PriQueue.h(56,31): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+      C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(8,7):
+          while compiling class template 'LinkedStack'
+  
+C:\Users\Kareem\Desktop\ds-repo\Restaurant-Project\Stack.h(75,22): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
+  (compiling source file 'UI.cpp')
+  
+  Generating Code...
   Restaurant-Project.vcxproj -> C:\Users\Kareem\Desktop\ds-repo\x64\Debug\Restaurant-Project.exe

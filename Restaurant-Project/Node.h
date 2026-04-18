@@ -79,7 +79,7 @@ public:
 		return next;
 	}
 
-	int getPri() const
+	double getPri() const
 	{
 		return pri;
 	}

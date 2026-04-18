@@ -32,6 +32,7 @@ public:
 	string readInputFileName();
 	string readOutputFileName();
 	SimulationMode readSimulationMode();
+	int UIMenuRandom(int& totalOrdersGenerated);
 
 	void printTimestep(int timestep);
 	void waitForUser();
@@ -44,15 +45,14 @@ public:
 		CancellableQueue<Order*>* pendOVC, priQueue<Order*>* pendOVG, LinkedQueue<Order*>* pendOVN,
 		LinkedQueue<Chef*>* availCS, LinkedQueue<Chef*>* availCN,
 		CancellablePriQueue<Order*>* cookingOrders,
-		LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, CancellableQueue<Order*>* readyDelivery,
+		LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, CancellableQueue<Order*>* readyOVC, LinkedQueue<Order*>* readyOVG, LinkedQueue<Order*>* readyOVN,
 		priQueue<Scooter*>* availScooters,
 		TablePriQueue<Table*>* availTables, TablePriQueue<Table*>* busySharable, TablePriQueue<Table*>* busyNoShare,
 		priQueue<Order*>* inServiceOrders,
 		LinkedQueue<Scooter*>* inMaintenanceScooters,
 		priQueue<Scooter*>* scootersBack,
 		LinkedQueue<Order*>* cancelledOrders,
-		LinkedStack<Order*>* finishedOrders
-	);
+		LinkedStack<Order*>* finishedOrders);
 
 	~UI() {}
 };

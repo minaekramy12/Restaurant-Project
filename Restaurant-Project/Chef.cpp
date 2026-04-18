@@ -12,6 +12,7 @@ void Chef::setAvailable() { isBusy = false; currOrder = nullptr; TF = 0; }
 
 void Chef::assignOrder(Order* ord, int currentTime) {
 	currOrder = ord;
+	if (speed <= 0) speed = 1;
 	isBusy = true;
 	int cookDuration = ord->getSize() / speed;
 	if (ord->getSize() % speed != 0) cookDuration++;

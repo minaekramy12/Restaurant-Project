@@ -2,13 +2,16 @@
 #define _CANCELLABLE_PRI_QUEUE_H_
 
 #include "PriQueue.h"
+#include "Queue.h"
 
 template <typename T>
 class CancellablePriQueue : public priQueue<T> {
 public:
 	bool CancelOrder(int id, T& cancelledItem) {
-		int currentSize = this->getCount();
 		bool found = false;
+		LinkedQueue<T> tempQueue;
+		LinkedQueue<double> tempPriQueue;
+		int currentSize = this->getCount();
 		for (int i = 0; i < currentSize; i++) {
 			T temp;
 			double pri;
@@ -18,8 +21,17 @@ public:
 				found = true;
 			}
 			else {
-				this->enqueue(temp, pri);
+				tempQueue.enqueue(temp);
+				tempPriQueue.enqueue(pri);
 			}
+		}
+
+		while (!tempQueue.isEmpty()) {
+			T t = tempQueue.peekFront();
+			double p = tempPriQueue.peekFront();
+			tempQueue.dequeue();
+			tempPriQueue.dequeue();
+			this->enqueue(t, p);
 		}
 		return found;
 	}

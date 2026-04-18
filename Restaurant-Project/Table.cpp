@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& os, const Table* t) {
 int Table::getCapacity() const { return capacity; }
 int Table::getFreeSeats() const { return freeSeats; }
 int Table::getID() const { return ID; }
-bool Table::isFull() const { return freeSeats == capacity; }
+bool Table::isFull() const { return freeSeats == 0; }
 bool Table::getShared() const { return isShared; }
 double Table::getPriority() const { return -freeSeats; }
 

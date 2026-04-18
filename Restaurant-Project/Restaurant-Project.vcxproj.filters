@@ -91,5 +91,8 @@
     <ClCompile Include="CancellableQueue.h">
       <Filter>ADTs</Filter>
     </ClCompile>
+    <ClCompile Include="RandomSimulation.cpp">
+      <Filter>Core &amp; UI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

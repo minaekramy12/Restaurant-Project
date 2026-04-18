@@ -148,6 +148,7 @@
     <ClCompile Include="CancellableQueue.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Order.cpp" />
+    <ClCompile Include="RandomSimulation.cpp" />
     <ClCompile Include="Restaurant.cpp" />
     <ClCompile Include="Scooter.cpp" />
     <ClCompile Include="Table.cpp" />

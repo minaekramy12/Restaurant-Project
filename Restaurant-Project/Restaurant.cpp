@@ -1,6 +1,4 @@
 #include "Restaurant.h"
-#include <stdlib.h>
-#include <time.h>
 
 Restaurant::Restaurant() {
 	pUI = new UI();
@@ -9,7 +7,12 @@ Restaurant::Restaurant() {
 
 Restaurant::~Restaurant() {
 	delete pUI;
+	ClearUp();
+}
 
+
+void Restaurant::ClearUp()
+{
 	while (!actionList.isEmpty()) {
 		Action* pAct = actionList.peekFront();
 		actionList.dequeue();
@@ -20,46 +23,49 @@ Restaurant::~Restaurant() {
 		pendTakeaway.dequeue();
 		delete pOrd;
 	}
-
 	while (!pendODN.isEmpty()) {
 		Order* pOrd = pendODN.peekFront();
 		pendODN.dequeue();
 		delete pOrd;
 	}
-
 	while (!pendODG.isEmpty()) {
 		Order* pOrd = pendODG.peekFront();
 		pendODG.dequeue();
 		delete pOrd;
 	}
-
 	while (!pendOVC.isEmpty()) {
 		Order* pOrd = pendOVC.peekFront();
 		pendOVC.dequeue();
 		delete pOrd;
 	}
-
 	while (!pendOVN.isEmpty()) {
 		Order* pOrd = pendOVN.peekFront();
 		pendOVN.dequeue();
 		delete pOrd;
 	}
-
 	while (!readyTakeaway.isEmpty()) {
 		Order* pOrd = readyTakeaway.peekFront();
 		readyTakeaway.dequeue();
 		delete pOrd;
 	}
-
 	while (!readyDineIn.isEmpty()) {
 		Order* pOrd = readyDineIn.peekFront();
 		readyDineIn.dequeue();
 		delete pOrd;
 	}
-
-	while (!readyDelivery.isEmpty()) {
-		Order* pOrd = readyDelivery.peekFront();
-		readyDelivery.dequeue();
+	while (!readyOVC.isEmpty()) {
+		Order* pOrd = readyOVC.peekFront();
+		readyOVC.dequeue();
+		delete pOrd;
+	}
+	while (!readyOVG.isEmpty()) {
+		Order* pOrd = readyOVG.peekFront();
+		readyOVG.dequeue();
+		delete pOrd;
+	}
+	while (!readyOVN.isEmpty()) {
+		Order* pOrd = readyOVN.peekFront();
+		readyOVN.dequeue();
 		delete pOrd;
 	}
 
@@ -107,239 +113,19 @@ Restaurant::~Restaurant() {
 	while (busyNoShare.dequeue(pTable, pri)) delete pTable;
 }
 
+
 bool Restaurant::IsSimulationComplete() const {
 	return actionList.isEmpty() && pendTakeaway.isEmpty() && pendODN.isEmpty() &&
 		pendODG.isEmpty() && pendOVC.isEmpty() && pendOVG.isEmpty() &&
 		pendOVN.isEmpty() && cookingOrders.isEmpty() && readyTakeaway.isEmpty() &&
-		readyDineIn.isEmpty() && readyDelivery.isEmpty() && inServiceOrders.isEmpty();
-}
-
-void Restaurant::RandomSimulation() {
-	srand(time(NULL));
-	int totalOrdersGenerated = 499;
-	while (totalOrdersGenerated < 500) {
-		cout << "\nEnter total number of orders (must be > 500): ";
-		cin >> totalOrdersGenerated;
-		if (totalOrdersGenerated < 500) cout << "\n Orders must be at least 500";
-	}
-	pUI->clearScreen();
-	pUI->printMessage("Starting Random Simulation (Phase 1)...");
-
-	for (int i = 1; i <= 10; i++) availCS.enqueue(new CS(i, 5));
-	for (int i = 11; i <= 20; i++) availCN.enqueue(new CN(i, 4));
-	for (int i = 1; i <= 10; i++) availScooters.enqueue(new Scooter(i, 30, 1, 10, 5), 30);
-	for (int i = 1; i <= 10; i++) availTables.enqueue(new Table(i, 6), -6);
-
-	for (int i = 1; i <= totalOrdersGenerated; i++) {
-		int typeRoll = rand() % 6;
-		Order* pOrd = nullptr;
-
-		int size = rand() % 10 + 1;
-		double money = rand() % 200 + 50;
-		int seats = rand() % 4 + 1;
-		int duration = rand() % 15 + 5;
-		double distance = rand() % 500 + 100;
-
-		if (typeRoll == 0) pOrd = new ODGOrder(i, 1, size, money, seats, duration, true);
-		else if (typeRoll == 1) pOrd = new ODNOrder(i, 1, size, money, seats, duration, false);
-		else if (typeRoll == 2) pOrd = new TakeawayOrder(i, 1, size, money);
-		else if (typeRoll == 3) pOrd = new OVC(i, 1, size, money, distance);
-		else if (typeRoll == 4) pOrd = new OVG(i, 1, size, money, distance);
-		else if (typeRoll == 5) pOrd = new OVN(i, 1, size, money, distance);
-
-		AddToPending(pOrd);
-	}
-
-	currentTimestep = 1;
-
-	while (finishedOrders.getCount() + cancelledOrders.getCount() < totalOrdersGenerated) {
-
-		for (int i = 0; i < 30; i++) {
-			Order* pOrd = nullptr;
-			int listChoice = rand() % 6;
-
-			if (listChoice == 0 && !pendTakeaway.isEmpty()) { pOrd = pendTakeaway.peekFront(); pendTakeaway.dequeue(); }
-			else if (listChoice == 1 && !pendODN.isEmpty()) { pOrd = pendODN.peekFront(); pendODN.dequeue(); }
-			else if (listChoice == 2 && !pendODG.isEmpty()) { pOrd = pendODG.peekFront(); pendODG.dequeue(); }
-			else if (listChoice == 3 && !pendOVC.isEmpty()) { pOrd = pendOVC.peekFront(); pendOVC.dequeue(); }
-			else if (listChoice == 4 && !pendOVG.isEmpty()) { double pri; pendOVG.dequeue(pOrd, pri); }
-			else if (listChoice == 5 && !pendOVN.isEmpty()) { pOrd = pendOVN.peekFront(); pendOVN.dequeue(); }
-
-			if (pOrd) {
-				Chef* pChef = nullptr;
-				if (rand() % 2 == 0 && !availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
-				else if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
-				if (pChef) availCS.enqueue(pChef);
-
-				int speed = pChef ? pChef->getSpeed() : 1;
-				double expectedTR = currentTimestep + ((double)pOrd->getSize() / speed);
-				cookingOrders.enqueue(pOrd, -expectedTR);
-			}
-		}
-
-		if ((rand() % 100) < 75) {
-			for (int i = 0; i < 15; i++) {
-				Order* pOrd = nullptr;
-				double pri;
-				if (!cookingOrders.isEmpty()) {
-					cookingOrders.dequeue(pOrd, pri);
-					string type = pOrd->GetType();
-					if (type == "OT") readyTakeaway.enqueue(pOrd);
-					else if (type == "ODG" || type == "ODN") readyDineIn.enqueue(pOrd);
-					else readyDelivery.enqueue(pOrd);
-				}
-			}
-		}
-
-		for (int i = 0; i < 10; i++) {
-			Order* pOrd = nullptr;
-			int listChoice = rand() % 3;
-
-			if (listChoice == 0 && !readyTakeaway.isEmpty()) { pOrd = readyTakeaway.peekFront();  readyTakeaway.dequeue(); }
-			else if (listChoice == 1 && !readyDineIn.isEmpty()) { pOrd = readyDineIn.peekFront();  readyDineIn.dequeue(); }
-			else if (listChoice == 2 && !readyDelivery.isEmpty()) { pOrd = readyDelivery.peekFront();  readyDelivery.dequeue(); }
-
-			if (pOrd) {
-				string type = pOrd->GetType();
-				if (type == "OT") {
-					finishedOrders.push(pOrd);
-				}
-				else if (type == "OVC" || type == "OVG" || type == "OVN") {
-					Scooter* pScooter = nullptr;
-					double pri;
-					double expectedTF = currentTimestep;
-					if (!availScooters.isEmpty()) {
-						availScooters.dequeue(pScooter, pri);
-						dynamic_cast<DeliveryOrder*>(pOrd)->setScooter(pScooter);
-
-						double dist = dynamic_cast<DeliveryOrder*>(pOrd)->getDistance();
-						int spd = pScooter->getSpeed() > 0 ? pScooter->getSpeed() : 1;
-						expectedTF += (dist / spd);
-					}
-					inServiceOrders.enqueue(pOrd, -expectedTF);
-				}
-				else if (type == "ODG" || type == "ODN") {
-					Table* pTable = nullptr;
-					double pri;
-					if (!availTables.isEmpty()) {
-						availTables.dequeue(pTable, pri);
-
-						DineInOrder* dOrd = dynamic_cast<DineInOrder*>(pOrd);
-						int freeSeats = pTable->getCapacity() - dOrd->getNSeats();
-						if (freeSeats < 0) freeSeats = 0;
-
-						if (dOrd->getShare() && freeSeats > 0) {
-							busySharable.enqueue(pTable, freeSeats);
-						}
-						else {
-							busyNoShare.enqueue(pTable, 1);
-						}
-					}
-					double expectedTF = currentTimestep + dynamic_cast<DineInOrder*>(pOrd)->getDuration();
-					inServiceOrders.enqueue(pOrd, -expectedTF);
-				}
-			}
-		}
-
-		int cancelId1 = (rand() % totalOrdersGenerated) + 1;
-		Order* pCancelled1 = nullptr;
-		if (pendOVC.CancelOrder(cancelId1, pCancelled1)) cancelledOrders.enqueue(pCancelled1);
-
-		int cancelId2 = (rand() % totalOrdersGenerated) + 1;
-		Order* pCancelled2 = nullptr;
-		if (readyDelivery.CancelOrder(cancelId2, pCancelled2)) cancelledOrders.enqueue(pCancelled2);
-
-		int cancelId3 = (rand() % totalOrdersGenerated) + 1;
-		Order* pCancelled3 = nullptr;
-		if (cookingOrders.CancelOrder(cancelId3, pCancelled3)) cancelledOrders.enqueue(pCancelled3);
-
-		if ((rand() % 100) < 25) {
-			Order* pOrd = nullptr;
-			double pri;
-			if (!inServiceOrders.isEmpty()) {
-				inServiceOrders.dequeue(pOrd, pri);
-				finishedOrders.push(pOrd);
-
-				string type = pOrd->GetType();
-				if (type == "OVC" || type == "OVG" || type == "OVN") {
-					Scooter* pScooter = dynamic_cast<DeliveryOrder*>(pOrd)->getScooter();
-					if (pScooter) {
-						double dist = dynamic_cast<DeliveryOrder*>(pOrd)->getDistance();
-						int spd = pScooter->getSpeed() > 0 ? pScooter->getSpeed() : 1;
-						double returnTime = currentTimestep + (dist / spd);
-						scootersBack.enqueue(pScooter, -returnTime);
-					}
-				}
-				else if (type == "ODG" || type == "ODN") {
-					Table* t = nullptr;
-					double tpri;
-					if (!busySharable.isEmpty() && rand() % 2 == 0) {
-						busySharable.dequeue(t, tpri);
-						availTables.enqueue(t, -(t->getCapacity()));
-					}
-					else if (!busyNoShare.isEmpty()) {
-						busyNoShare.dequeue(t, tpri);
-						availTables.enqueue(t, -(t->getCapacity()));
-					}
-					else if (!busySharable.isEmpty()) {
-						busySharable.dequeue(t, tpri);
-						availTables.enqueue(t, -(t->getCapacity()));
-					}
-				}
-			}
-		}
-
-		if ((rand() % 100) < 50) {
-			Scooter* pScooter = nullptr;
-			double pri;
-			if (!scootersBack.isEmpty()) {
-				scootersBack.dequeue(pScooter, pri);
-				if (rand() % 2 == 0) availScooters.enqueue(pScooter, pScooter->getSpeed());
-				else inMaintenanceScooters.enqueue(pScooter);
-			}
-		}
-
-		if ((rand() % 100) < 50) {
-			Scooter* pScooter = nullptr;
-			if (!inMaintenanceScooters.isEmpty()) {
-				pScooter = inMaintenanceScooters.peekFront();
-				inMaintenanceScooters.dequeue();
-				availScooters.enqueue(pScooter, pScooter->getSpeed());
-			}
-		}
-
-
-		currentTimestep++;
-	}
-	pUI->clearScreen();
-	pUI->printTimestep(currentTimestep);
-	pUI->printSystemStatus(
-		&actionList,
-		&pendTakeaway, &pendODN, &pendODG,
-		&pendOVC, &pendOVG, &pendOVN,
-		&availCS, &availCN,
-		&cookingOrders,
-		&readyTakeaway, &readyDineIn, &readyDelivery,
-		&availScooters,
-		&availTables, &busySharable, &busyNoShare,
-		&inServiceOrders,
-		&inMaintenanceScooters,
-		&scootersBack,
-		&cancelledOrders,
-		&finishedOrders
-	);
-
-	pUI->waitForUser();
-
-	pUI->clearScreen();
-
-	pUI->printMessage("Phase 1 Random Simulation Finished! All " + to_string(totalOrdersGenerated) + " Orders Processed.");
-	pUI->printMessage("\nSimulation ends\n");
+		readyDineIn.isEmpty() && readyOVC.isEmpty() && readyOVG.isEmpty() &&
+		readyOVN.isEmpty() && inServiceOrders.isEmpty();
 }
 
 
 void Restaurant::RunSimulation() {
 	pUI->clearScreen();
+	ClearUp();
 	SimulationMode mode = pUI->readSimulationMode();
 	if (mode == RANDOM) {
 		this->RandomSimulation();
@@ -370,11 +156,6 @@ void Restaurant::RunSimulation() {
 
 	while (!IsSimulationComplete()) {
 		ExecuteEvents();
-		ReturnScooters();
-		FinishOrders();
-		ServeOrders();
-		FinishCooking();
-		AssignOrders();
 
 		if (mode == INTERACTIVE) {
 			pUI->clearScreen();
@@ -386,7 +167,8 @@ void Restaurant::RunSimulation() {
 				&pendOVC, &pendOVG, &pendOVN,
 				&availCS, &availCN,
 				&cookingOrders,
-				&readyTakeaway, &readyDineIn, &readyDelivery,
+				&readyTakeaway, &readyDineIn,
+				&readyOVC, &readyOVG, &readyOVN,
 				&availScooters,
 				&availTables, &busySharable, &busyNoShare,
 				&inServiceOrders,
@@ -395,6 +177,12 @@ void Restaurant::RunSimulation() {
 				&cancelledOrders,
 				&finishedOrders
 			);
+
+			ReturnScooters();
+			FinishOrders();
+			ServeOrders();
+			FinishCooking();
+			AssignOrders();
 
 			pUI->waitForUser();
 		}
@@ -447,19 +235,15 @@ void Restaurant::CancelOVC(int id) {
 		Chef* assignedChef = pCancelledOrder->getAssignedChef();
 		if (assignedChef) {
 			assignedChef->setAvailable();
-			if (dynamic_cast<CS*>(assignedChef)) {
-				availCS.enqueue(assignedChef);
-			}
-			else if (dynamic_cast<CN*>(assignedChef)) {
-				availCN.enqueue(assignedChef);
-			}
+			if (dynamic_cast<CS*>(assignedChef)) availCS.enqueue(assignedChef);
+			else if (dynamic_cast<CN*>(assignedChef)) availCN.enqueue(assignedChef);
 		}
 		pCancelledOrder->setStatus(CANCELLED);
 		cancelledOrders.enqueue(pCancelledOrder);
 		return;
 	}
 
-	if (readyDelivery.CancelOrder(id, pCancelledOrder)) {
+	if (readyOVC.CancelOrder(id, pCancelledOrder)) {
 		pCancelledOrder->setStatus(CANCELLED);
 		cancelledOrders.enqueue(pCancelledOrder);
 		return;
@@ -485,11 +269,11 @@ void Restaurant::ExtractAndMoveTable(Table* pTable, bool isShared) {
 	}
 
 	if (pTable->getFreeSeats() == pTable->getCapacity()) {
-		pTable->setShared(false);
-		availTables.enqueue(pTable, -(pTable->getCapacity()));
+		pTable->setTableFree(); // set free
+		availTables.enqueue(pTable, pTable->getPriority()); //-capacity
 	}
 	else {
-		busySharable.enqueue(pTable, pTable->getFreeSeats());
+		busySharable.enqueue(pTable, pTable->getPriority()); //-freeSeats
 	}
 }
 
@@ -499,35 +283,22 @@ void Restaurant::AssignOrders() {
 	double pri;
 
 	while (!pendOVG.isEmpty()) {
-		if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
-		else if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
+		if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
+		else if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
 		else break;
 
 		pendOVG.dequeue(pOrd, pri);
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
-		cookingOrders.enqueue(pOrd, -(pOrd->getTR()));
+		cookingOrders.enqueue(pOrd, -(pOrd->getTR())); //-TR
 	}
 
 	while (!pendOVC.isEmpty()) {
-		if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
-		else if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
+		if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
+		else if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
 		else break;
 
-		pOrd = pendOVC.peekFront();
-		pendOVC.dequeue();
+		pOrd = pendOVC.peekFront(); pendOVC.dequeue();
 
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
@@ -535,18 +306,11 @@ void Restaurant::AssignOrders() {
 	}
 
 	while (!pendODG.isEmpty()) {
-		if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
-		else if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
+		if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
+		else if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
 		else break;
 
-		pOrd = pendODG.peekFront();
-		pendODG.dequeue();
+		pOrd = pendODG.peekFront(); pendODG.dequeue();
 
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
@@ -554,18 +318,11 @@ void Restaurant::AssignOrders() {
 	}
 
 	while (!pendOVN.isEmpty()) {
-		if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
-		else if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
+		if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
+		else if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
 		else break;
 
-		pOrd = pendOVN.peekFront();
-		pendOVN.dequeue();
+		pOrd = pendOVN.peekFront(); pendOVN.dequeue();
 
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
@@ -573,18 +330,11 @@ void Restaurant::AssignOrders() {
 	}
 
 	while (!pendODN.isEmpty()) {
-		if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
-		else if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
+		if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
+		else if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
 		else break;
 
-		pOrd = pendODN.peekFront();
-		pendODN.dequeue();
+		pOrd = pendODN.peekFront(); pendODN.dequeue();
 
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
@@ -592,18 +342,11 @@ void Restaurant::AssignOrders() {
 	}
 
 	while (!pendTakeaway.isEmpty()) {
-		if (!availCN.isEmpty()) {
-			pChef = availCN.peekFront();
-			availCN.dequeue();
-		}
-		else if (!availCS.isEmpty()) {
-			pChef = availCS.peekFront();
-			availCS.dequeue();
-		}
+		if (!availCN.isEmpty()) { pChef = availCN.peekFront(); availCN.dequeue(); }
+		else if (!availCS.isEmpty()) { pChef = availCS.peekFront(); availCS.dequeue(); }
 		else break;
 
-		pOrd = pendTakeaway.peekFront();
-		pendTakeaway.dequeue();
+		pOrd = pendTakeaway.peekFront(); pendTakeaway.dequeue();
 
 		pChef->assignOrder(pOrd, currentTimestep);
 		pOrd->setStatus(COOKING);
@@ -624,17 +367,15 @@ void Restaurant::FinishCooking() {
 			Chef* pChef = pOrd->getAssignedChef();
 			pChef->setAvailable();
 
-			if (dynamic_cast<CS*>(pChef)) {
-				availCS.enqueue(pChef);
-			}
-			else if (dynamic_cast<CN*>(pChef)) {
-				availCN.enqueue(pChef);
-			}
+			if (dynamic_cast<CS*>(pChef)) availCS.enqueue(pChef);
+			else if (dynamic_cast<CN*>(pChef)) availCN.enqueue(pChef);
 
 			string type = pOrd->GetType();
 			if (type == "OT") readyTakeaway.enqueue(pOrd);
 			else if (type == "ODG" || type == "ODN") readyDineIn.enqueue(pOrd);
-			else readyDelivery.enqueue(pOrd);
+			else if (type == "OVC") readyOVC.enqueue(pOrd);
+			else if (type == "OVG") readyOVG.enqueue(pOrd);
+			else if (type == "OVN") readyOVN.enqueue(pOrd);
 		}
 		else {
 			break;
@@ -658,17 +399,28 @@ void Restaurant::ServeOrders() {
 		finishedOrders.push(pOrd);
 	}
 
-	while (!readyDelivery.isEmpty() && !availScooters.isEmpty()) {
-		pOrd = readyDelivery.peekFront();
-		readyDelivery.dequeue();
+	while (!availScooters.isEmpty() && (!readyOVC.isEmpty() || !readyOVG.isEmpty() || !readyOVN.isEmpty())) {
+
+		if (!readyOVC.isEmpty()) {
+			pOrd = readyOVC.peekFront();
+			readyOVC.dequeue();
+		}
+		else if (!readyOVG.isEmpty()) {
+			pOrd = readyOVG.peekFront();
+			readyOVG.dequeue();
+		}
+		else {
+			pOrd = readyOVN.peekFront();
+			readyOVN.dequeue();
+		}
 
 		availScooters.dequeue(pScooter, pri);
 
-		pScooter->deliverOrder(pOrd, currentTimestep);
+		pScooter->deliverOrder(pOrd, currentTimestep); // InMaintainance if orders > max
 		dynamic_cast<DeliveryOrder*>(pOrd)->setScooter(pScooter);
 
 		pOrd->setStatus(IN_SERVICE);
-		inServiceOrders.enqueue(pOrd, -(pOrd->getTF()));
+		inServiceOrders.enqueue(pOrd, -(pOrd->getTF())); // Priority is -TF
 	}
 
 	while (!readyDineIn.isEmpty()) {
@@ -684,7 +436,7 @@ void Restaurant::ServeOrders() {
 				tableFound = true;
 				pTable->reserveTable(dineOrd, reqSeats, wantsShare);
 				dineOrd->setTable(pTable);
-				busySharable.enqueue(pTable, pTable->getFreeSeats());
+				busySharable.enqueue(pTable, pTable->getPriority());
 			}
 		}
 
@@ -694,8 +446,8 @@ void Restaurant::ServeOrders() {
 				pTable->reserveTable(dineOrd, reqSeats, wantsShare);
 				dineOrd->setTable(pTable);
 
-				if (wantsShare) busySharable.enqueue(pTable, pTable->getFreeSeats());
-				else busyNoShare.enqueue(pTable, pTable->getFreeSeats());
+				if (wantsShare) busySharable.enqueue(pTable, pTable->getPriority());
+				else busyNoShare.enqueue(pTable, pTable->getPriority());
 			}
 		}
 
@@ -729,12 +481,10 @@ void Restaurant::FinishOrders() {
 			if (type == "OVC" || type == "OVG" || type == "OVN") {
 				Scooter* pScooter = dynamic_cast<DeliveryOrder*>(pOrd)->getScooter();
 				if (pScooter) {
-					if (pScooter->getInMaintenance()) {
-						inMaintenanceScooters.enqueue(pScooter);
+					if (pScooter->getState() != InMaintainance) { //if not maintenance set to back
+						pScooter->setBack();
 					}
-					else {
-						scootersBack.enqueue(pScooter, -(pScooter->getBackTime()));
-					}
+					scootersBack.enqueue(pScooter, -(pScooter->getBackTime()));
 				}
 			}
 			else if (type == "ODG" || type == "ODN") {
@@ -761,7 +511,15 @@ void Restaurant::ReturnScooters() {
 		s = scootersBack.peekFront();
 		if (currentTimestep >= s->getBackTime()) {
 			scootersBack.dequeue(s, pri);
-			availScooters.enqueue(s, s->getSpeed());
+
+			if (s->getState() == InMaintainance) {
+				s->setMaintenance(currentTimestep); // Sets main finish
+				inMaintenanceScooters.enqueue(s);
+			}
+			else {
+				s->setAvailable();
+				availScooters.enqueue(s, s->getPriority()); // -totalDistance
+			}
 		}
 		else {
 			break;
@@ -772,10 +530,9 @@ void Restaurant::ReturnScooters() {
 	for (int i = 0; i < maintCount; i++) {
 		s = inMaintenanceScooters.peekFront();
 		inMaintenanceScooters.dequeue();
-
-		if (currentTimestep >= s->getBackTime()) {
-			s->setMaintenance(false);
-			availScooters.enqueue(s, s->getSpeed());
+		if (currentTimestep >= -(s->getPriority())) {
+			s->setAvailable(); // Resets scooter state successfully
+			availScooters.enqueue(s, s->getPriority()); //-totalDistance
 		}
 		else {
 			inMaintenanceScooters.enqueue(s);
@@ -784,7 +541,7 @@ void Restaurant::ReturnScooters() {
 }
 
 bool Restaurant::LoadFromFile(string filename) {
-	ifstream inFile(filename);
+	std::ifstream inFile(filename);
 
 	if (!inFile.is_open()) {
 		return false;
@@ -866,7 +623,7 @@ bool Restaurant::LoadFromFile(string filename) {
 }
 
 void Restaurant::SaveOutput(string filename) {
-	ofstream outFile(filename);
+	std::ofstream outFile(filename);
 	if (!outFile.is_open()) {
 		pUI->printMessage("Error: Could not create output file.");
 		return;
@@ -879,13 +636,10 @@ void Restaurant::SaveOutput(string filename) {
 	int totalFinished = 0, totalCancelled = 0;
 	double sumTi = 0, sumTC = 0, sumTw = 0, sumTserv = 0;
 
-	LinkedStack<Order*> tempStack;
 	Order* pOrd;
-
 	while (!finishedOrders.isEmpty()) {
 		pOrd = finishedOrders.top();
 		finishedOrders.pop();
-		tempStack.push(pOrd);
 
 		string type = pOrd->GetType();
 		if (type == "ODG") totalODG++;
@@ -911,19 +665,13 @@ void Restaurant::SaveOutput(string filename) {
 			<< pOrd->getTC() << "\t"
 			<< pOrd->getTW() << "\t"
 			<< pOrd->getTserv() << "\n";
+
+		delete pOrd;
 	}
 
-	while (!tempStack.isEmpty()) {
-		pOrd = tempStack.top();
-		tempStack.pop();
-		finishedOrders.push(pOrd);
-	}
-
-	LinkedQueue<Order*> tempQueue;
 	while (!cancelledOrders.isEmpty()) {
 		pOrd = cancelledOrders.peekFront();
 		cancelledOrders.dequeue();
-		tempQueue.enqueue(pOrd);
 
 		string type = pOrd->GetType();
 		if (type == "ODG") totalODG++;
@@ -934,12 +682,8 @@ void Restaurant::SaveOutput(string filename) {
 		else if (type == "OVN") totalOVN++;
 
 		totalCancelled++;
-	}
 
-	while (!tempQueue.isEmpty()) {
-		pOrd = tempQueue.peekFront();
-		tempQueue.dequeue();
-		cancelledOrders.enqueue(pOrd);
+		delete pOrd;
 	}
 
 	totalOrders = totalFinished + totalCancelled;
@@ -951,31 +695,27 @@ void Restaurant::SaveOutput(string filename) {
 	double chefBusyTime = 0;
 	Chef* pChef;
 
-	for (int i = 0; i < totalCS; i++) {
+	while (!availCS.isEmpty()) {
 		pChef = availCS.peekFront();
 		availCS.dequeue();
 		chefBusyTime += pChef->getTotalBusyTime();
-		availCS.enqueue(pChef);
+		delete pChef;
 	}
-	for (int i = 0; i < totalCN; i++) {
+	while (!availCN.isEmpty()) {
 		pChef = availCN.peekFront();
 		availCN.dequeue();
 		chefBusyTime += pChef->getTotalBusyTime();
-		availCN.enqueue(pChef);
+		delete pChef;
 	}
 
 	int totalScooters = availScooters.getCount();
 	double scooterBusyTime = 0;
 	Scooter* pScooter;
 	double pri;
-	priQueue<Scooter*> tempPriQ;
 
 	while (availScooters.dequeue(pScooter, pri)) {
 		scooterBusyTime += pScooter->getTotalBusyTime();
-		tempPriQ.enqueue(pScooter, pri);
-	}
-	while (tempPriQ.dequeue(pScooter, pri)) {
-		availScooters.enqueue(pScooter, pri);
+		delete pScooter;
 	}
 
 	double avgTi = totalFinished > 0 ? sumTi / totalFinished : 0;

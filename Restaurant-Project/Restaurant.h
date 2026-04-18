@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <stdlib.h>
+#include <time.h>
 
 #include "Queue.h"
 #include "PriQueue.h"
@@ -19,7 +21,7 @@
 #include "Action.h"
 #include "UI.h"
 
-using namespace std;
+using std::string;
 
 class Restaurant {
 private:
@@ -27,15 +29,15 @@ private:
 	int currentTimestep;
 	LinkedQueue<Action*> actionList;
 
-	// Pending Orders
-	LinkedQueue<Order*> pendTakeaway;
-	LinkedQueue<Order*> pendODN;
-	LinkedQueue<Order*> pendODG;
+	//Pending Orders
+	LinkedQueue<Order*> pendTakeaway;    
+	LinkedQueue<Order*> pendODN;         
+	LinkedQueue<Order*> pendODG;    
 	CancellableQueue<Order*> pendOVC;
-	priQueue<Order*> pendOVG;
-	LinkedQueue<Order*> pendOVN;
+	priQueue<Order*> pendOVG;     
+	LinkedQueue<Order*> pendOVN;       
 
-	// Available Resources
+	//Free Resources
 	LinkedQueue<Chef*> availCS;
 	LinkedQueue<Chef*> availCN;
 	priQueue<Scooter*> availScooters;
@@ -44,16 +46,22 @@ private:
 	TablePriQueue<Table*> busySharable;
 	TablePriQueue<Table*> busyNoShare;
 
-	// In-Progress and Ready
+	//In-Progress & Ready
 	CancellablePriQueue<Order*> cookingOrders;
-	LinkedQueue<Order*> readyTakeaway;
-	LinkedQueue<Order*> readyDineIn;
-	CancellableQueue<Order*> readyDelivery;
 
-	// In-Service, Maintenance, and Finished
+	LinkedQueue<Order*> readyTakeaway;
+	LinkedQueue<Order*> readyDineIn; 
+
+	
+	CancellableQueue<Order*> readyOVC;
+	LinkedQueue<Order*> readyOVG;
+	LinkedQueue<Order*> readyOVN;
+
+	
 	priQueue<Order*> inServiceOrders;
-	LinkedQueue<Scooter*> inMaintenanceScooters;
+
 	priQueue<Scooter*> scootersBack;
+	LinkedQueue<Scooter*> inMaintenanceScooters;
 
 	LinkedQueue<Order*> cancelledOrders;
 	LinkedStack<Order*> finishedOrders;
@@ -80,6 +88,7 @@ public:
 
 	void ExtractAndMoveTable(Table* pTable, bool isShared);
 	bool IsSimulationComplete() const;
+	void ClearUp();
 };
 
 #endif

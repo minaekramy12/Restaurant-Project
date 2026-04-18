@@ -146,15 +146,8 @@ class OVG : public DeliveryOrder
 {
 public:
 	OVG(int id, int tq, int sz, double pr, double dis);
-	double getPriority() const
-		;
+	double getPriority() const;
 	string GetType() const { return "OVG"; }
-	double getPriority() const override {
-		double w1 = 0.6;
-		double w2 = 0.3;
-		double w3 = 0.1;
-		return (this->getPrice() * w1) + (this->getDistance() * w2) + (1.0 / this->getSize() * w3);
-	}
 };
 
 class OVN : public DeliveryOrder
