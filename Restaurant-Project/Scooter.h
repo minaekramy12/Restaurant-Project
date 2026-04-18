@@ -6,6 +6,12 @@
 class Order;
 class DeliveryOrder;
 
+enum ScooterState {
+	Available,
+	Back,
+	InMaintainance
+};
+
 class Scooter
 {
 private:
@@ -18,6 +24,7 @@ private:
 	int backTime;
 	DeliveryOrder* currentOrder;
 	int totalBusyTime;
+	ScooterState state;
 public:
 	Scooter(int id, int sp, int cap, int mOrds, int mDur);
 
@@ -27,6 +34,7 @@ public:
 	void setMDur(int mdur);
 	void setMaintenance(bool m);
 	void deliverOrder(Order* ord, int currentTime);
+	void setState(ScooterState s);
 
 	friend std::ostream& operator<<(std::ostream& os, const Scooter* s);
 
@@ -36,6 +44,8 @@ public:
 	bool getInMaintenance() const;
 	int getBackTime() const;
 	int getTotalBusyTime() const;
+	ScooterState getState() const;
+	double getPriority(DeliveryOrder* ord) const;
 
 	~Scooter();
 };

@@ -32,6 +32,8 @@ void Scooter::deliverOrder(Order* ord, int currentTime) {
 	}
 }
 
+void Scooter::setState(ScooterState s) { state = s; }
+
 std::ostream& operator<<(std::ostream& os, const Scooter* s) {
 	if (!s) return os;
 	os << s->ID;
@@ -44,5 +46,10 @@ int Scooter::getSpeed() const { return speed; }
 bool Scooter::getInMaintenance() const { return inMaintenance; }
 int Scooter::getBackTime() const { return backTime; }
 int Scooter::getTotalBusyTime() const { return totalBusyTime; }
+ScooterState Scooter::getState() const { return state; }
+double Scooter::getPriority(DeliveryOrder* ord) const {
+	if (state == Available) return -(ord->getDistance());
+
+}
 
 Scooter::~Scooter() {}
