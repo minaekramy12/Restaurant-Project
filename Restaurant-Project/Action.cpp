@@ -4,6 +4,7 @@
 
 void RequestAction::Execute(Restaurant* pRest) {
 	Order* pOrd = nullptr;
+
 	if (orderType == "ODG") {
 		pOrd = new ODGOrder(orderID, timestep, size, price, seats, duration, canShare);
 	}
@@ -22,6 +23,10 @@ void RequestAction::Execute(Restaurant* pRest) {
 	else if (orderType == "OVN") {
 		pOrd = new OVN(orderID, timestep, size, price, distance);
 	}
+	else if (orderType == "COMBO") {
+		pOrd = new COMBO(orderID, timestep, size, price, distance, reqChefs, reqScooters);
+	}
+
 	if (pOrd != nullptr) {
 		pRest->AddToPending(pOrd);
 	}

@@ -1,5 +1,5 @@
 #include "Node.h"
-#include "PrecondViolatedExcep.h"
+#include "PrecondViolatedExcept.h"
 #include <iostream>
 #ifndef _QUEUE_H_
 #define _QUEUE_H_
@@ -89,10 +89,10 @@ public:
 		}
 		return result;
 	}
-	T peekFront() const throw(PrecondViolatedExcep)
+	T peekFront() const throw(PrecondViolatedExcept)
 	{
 		if (isEmpty())
-			throw PrecondViolatedExcep("Queue is empty");
+			throw PrecondViolatedExcept("Queue is empty");
 		return frontPtr->getItem();
 	}
 	int getCount() const

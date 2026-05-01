@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 echo ==========================================
-echo    RESTAURANT TEST FILE GENERATOR
+echo   RESTAURANT TEST FILE GENERATOR
 echo ==========================================
 echo.
 
@@ -65,36 +65,74 @@ if !mDur! LSS 0 echo [ERROR] Cannot be negative! & goto AskMDur
 
 echo.
 echo --- TABLE PARAMETERS ---
-:AskNumTables
-set "numTables="
-set /p numTables="Enter TOTAL number of tables: "
-if "!numTables!"=="" echo [ERROR] Input cannot be empty! & goto AskNumTables
-if !numTables! LEQ 0 echo [ERROR] Must have at least 1 table! & goto AskNumTables
+:AskTableConfig
+set "rawTables="
+set /p rawTables="Enter table config pairs (e.g., 5 6 4 3 6 3): "
+if "!rawTables!"=="" echo [ERROR] Input cannot be empty! & goto AskTableConfig
 
-:AskMinTable
-set "minTableCap="
-set /p minTableCap="Enter MIN seats per table: "
-if "!minTableCap!"=="" echo [ERROR] Input cannot be empty! & goto AskMinTable
-if !minTableCap! LEQ 0 echo [ERROR] Must be greater than 0! & goto AskMinTable
-
-:AskMaxTable
-set "maxTableCap="
-set /p maxTableCap="Enter MAX seats per table: "
-if "!maxTableCap!"=="" echo [ERROR] Input cannot be empty! & goto AskMaxTable
-if !maxTableCap! LSS !minTableCap! echo [ERROR] Max must be greater than or equal to Min! & goto AskMaxTable
-
-set /a tablesLeft=!numTables!
 set "tableConfig="
+set "numTablesTotal=0"
+set "maxTableCap=1"
+set "tokenCount=0"
+set "prevToken="
 
-:GenerateTableGroups
-if !tablesLeft! LEQ 0 goto EndTableGroups
-set /a chunk=!RANDOM! %% !tablesLeft! + 1
-set /a tableDiff=!maxTableCap! - !minTableCap! + 1
-set /a cap=!RANDOM! %% !tableDiff! + !minTableCap!
-set tableConfig=!tableConfig!!chunk! !cap! 
-set /a tablesLeft-=!chunk!
-goto GenerateTableGroups
-:EndTableGroups
+for %%A in (!rawTables!) do (
+    set /a tokenCount+=1
+    set /a isEven=tokenCount %% 2
+    if !isEven!==0 (
+        rem We are on the capacity number part of the pair
+        set tableConfig=!tableConfig! !prevToken! %%A
+        set /a numTablesTotal+=!prevToken!
+        
+        rem Safely evaluate numeric max capacity
+        set /a currentCap=%%A
+        if !currentCap! GTR !maxTableCap! set "maxTableCap=!currentCap!"
+    ) else (
+        rem We are on the count number part of the pair
+        set "prevToken=%%A"
+    )
+)
+
+set /a checkOdd=tokenCount %% 2
+if !checkOdd!==1 (
+    echo.
+    echo [WARNING] You entered an odd number of values. 
+    echo The last standalone number [!prevToken!] has been truncated to keep valid pairs.
+)
+
+if !numTablesTotal! LEQ 0 (
+    echo [ERROR] No valid tables detected! Please try again.
+    goto AskTableConfig
+)
+
+echo.
+echo --- SIMULATION MODE ---
+:AskBonus
+set "isBonusFlag="
+set /p isBonusFlag="Is this a BONUS file? (Y/N): "
+if /I "!isBonusFlag!"=="Y" (
+    set "bonusMode=1"
+    goto AskTH
+) else if /I "!isBonusFlag!"=="N" (
+    set "bonusMode=0"
+    goto AskActions
+) else (
+    echo [ERROR] Invalid input. Please enter Y or N.
+    goto AskBonus
+)
+
+:AskTH
+set "TH="
+set /p TH="Enter Overwait Threshold (TH): "
+if "!TH!"=="" echo [ERROR] Input cannot be empty! & goto AskTH
+if !TH! LSS 0 echo [ERROR] Cannot be negative! & goto AskTH
+
+:AskFailProb
+set "failProb="
+set /p failProb="Enter Scooter Failure Probability (1-100): "
+if "!failProb!"=="" echo [ERROR] Input cannot be empty! & goto AskFailProb
+if !failProb! LSS 1 echo [ERROR] Must be between 1 and 100! & goto AskFailProb
+if !failProb! GTR 100 echo [ERROR] Must be between 1 and 100! & goto AskFailProb
 
 echo.
 echo --- ACTIONS / ORDERS ---
@@ -104,20 +142,36 @@ set /p numActions="Enter TOTAL number of actions (Requests + Cancels): "
 if "!numActions!"=="" echo [ERROR] Input cannot be empty! & goto AskActions
 if !numActions! LEQ 0 echo [ERROR] Must be greater than 0! & goto AskActions
 
+:AskCancelPercent
+set "cancelPercent="
+set /p cancelPercent="Enter cancel request percentage (1-100): "
+if "!cancelPercent!"=="" echo [ERROR] Input cannot be empty! & goto AskCancelPercent
+if !cancelPercent! LSS 1 echo [ERROR] Must be between 1 and 100! & goto AskCancelPercent
+if !cancelPercent! GTR 100 echo [ERROR] Must be between 1 and 100! & goto AskCancelPercent
+
 echo.
 echo Generating file "!filename!" Please wait....
 
-echo !numCS! !numCN! > "!filename!"
-echo !speedCS! !speedCN! >> "!filename!"
+rem Print header strictly in format: CN CS, then speeds
+echo !numCN! !numCS! > "!filename!"
+echo !speedCN! !speedCS! >> "!filename!"
 echo !numScooters! !speedScooter! >> "!filename!"
 echo !mOrds! !mDur! >> "!filename!"
-echo !numTables! >> "!filename!"
-echo !tableConfig! >> "!filename!"
+echo !numTablesTotal! >> "!filename!"
+echo !tableConfig:~1! >> "!filename!"
+
+rem If Bonus Mode, write the bonus variables
+if !bonusMode!==1 (
+    echo !TH! >> "!filename!"
+    echo !failProb! >> "!filename!"
+)
+
 echo !numActions! >> "!filename!"
 
 set TS=1
 set reqCount=0
 set currentAction=0
+set ovc_count=0
 
 :ActionLoop
 if !currentAction! GEQ !numActions! goto EndActionLoop
@@ -127,9 +181,10 @@ set /a step=!RANDOM! %% 3
 set /a TS=!TS! + !step!
 
 set isCancel=0
-if !reqCount! GTR 0 (
+rem Only attempt a cancel if there is at least one OVC order generated
+if !ovc_count! GTR 0 (
     set /a roll=!RANDOM! %% 100
-    if !roll! LSS 15 set isCancel=1
+    if !roll! LSS !cancelPercent! set isCancel=1
 )
 
 if !isCancel!==1 goto MakeCancel
@@ -139,29 +194,59 @@ set /a reqCount+=1
 
 set /a size=!RANDOM! %% 10 + 1
 set /a money=!RANDOM! %% 300 + 50
-set /a typeRand=!RANDOM! %% 6
-
-:: FIX: Order seats are now directly bounded by maxTableCap (1 to maxTableCap)
+set /a dist=!RANDOM! %% 2000 + 500
 set /a seats=!RANDOM! %% !maxTableCap! + 1
-
 set /a dur=!RANDOM! %% 20 + 10
 
 set /a shareRand=!RANDOM! %% 2
 if !shareRand!==1 (set share=Y) else (set share=N)
 
-set /a dist=!RANDOM! %% 2000 + 500
+if !bonusMode!==1 (
+    set /a typeRand=!RANDOM! %% 7
+) else (
+    set /a typeRand=!RANDOM! %% 6
+)
 
 if !typeRand!==0 echo Q ODG !TS! !reqCount! !size! !money! !seats! !dur! !share! >> "!filename!"
 if !typeRand!==1 echo Q ODN !TS! !reqCount! !size! !money! !seats! !dur! !share! >> "!filename!"
 if !typeRand!==2 echo Q OT !TS! !reqCount! !size! !money! >> "!filename!"
-if !typeRand!==3 echo Q OVC !TS! !reqCount! !size! !money! !dist! >> "!filename!"
 if !typeRand!==4 echo Q OVG !TS! !reqCount! !size! !money! !dist! >> "!filename!"
 if !typeRand!==5 echo Q OVN !TS! !reqCount! !size! !money! !dist! >> "!filename!"
+
+if !typeRand!==3 (
+    echo Q OVC !TS! !reqCount! !size! !money! !dist! >> "!filename!"
+    rem Store the OVC order ID in our pseudo-array to use for future cancellations
+    set /a ovc_count+=1
+    set ovc_list[!ovc_count!]=!reqCount!
+)
+
+if !typeRand!==6 (
+    rem --- COMBO CHEFS LOGIC ---
+    set /a totalChefs=!numCS! + !numCN!
+    set maxC=4
+    if !totalChefs! LSS 4 set maxC=!totalChefs!
+    if !maxC! LSS 1 set maxC=1
+    set /a reqC=!RANDOM! %% !maxC! + 1
+    
+    rem --- COMBO SCOOTER LOGIC ---
+    rem Removed parentheses to prevent batch syntax crash
+    set /a maxS=!numScooters! * 75 / 100
+    if !maxS! LSS 2 set maxS=2
+    
+    rem Calculate range (max - 2 + 1) -> max - 1
+    set /a rangeS=!maxS! - 1
+    set /a reqS=!RANDOM! %% !rangeS! + 2
+
+    echo Q COMBO !TS! !reqCount! !size! !money! !dist! !reqC! !reqS! >> "!filename!"
+)
 
 goto EndOfLoop
 
 :MakeCancel
-set /a cancelID=!RANDOM! %% !reqCount! + 1
+rem Pick a random OVC order from the array
+set /a randIndex=!RANDOM! %% !ovc_count! + 1
+for %%i in (!randIndex!) do set cancelID=!ovc_list[%%i]!
+
 echo X !TS! !cancelID! >> "!filename!"
 
 :EndOfLoop

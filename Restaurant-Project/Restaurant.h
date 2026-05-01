@@ -6,6 +6,7 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <format>
 
 #include "Queue.h"
 #include "PriQueue.h"
@@ -21,7 +22,7 @@
 #include "Action.h"
 #include "UI.h"
 
-using std::string;
+using std::string, std::format;
 
 class Restaurant {
 private:
@@ -29,15 +30,21 @@ private:
 	int currentTimestep;
 	LinkedQueue<Action*> actionList;
 
-	//Pending Orders
-	LinkedQueue<Order*> pendTakeaway;    
-	LinkedQueue<Order*> pendODN;         
-	LinkedQueue<Order*> pendODG;    
-	CancellableQueue<Order*> pendOVC;
-	priQueue<Order*> pendOVG;     
-	LinkedQueue<Order*> pendOVN;       
+	bool isBonus;           
+	int TH;  
+	int totalOverwaitCount; 
+	int failProb;           
+	int totalRescues;       
 
-	//Free Resources
+	LinkedQueue<Order*> pendCombo;
+	LinkedQueue<Order*> pendTakeaway;
+	LinkedQueue<Order*> pendODN;
+	LinkedQueue<Order*> pendODG;
+	CancellableQueue<Order*> pendOVC;
+	priQueue<Order*> pendOVG;
+	LinkedQueue<Order*> pendOVN;
+
+	// free Resources
 	LinkedQueue<Chef*> availCS;
 	LinkedQueue<Chef*> availCN;
 	priQueue<Scooter*> availScooters;
@@ -46,18 +53,17 @@ private:
 	TablePriQueue<Table*> busySharable;
 	TablePriQueue<Table*> busyNoShare;
 
-	//In-Progress & Ready
 	CancellablePriQueue<Order*> cookingOrders;
 
+	LinkedQueue<Order*> readyCombo;
 	LinkedQueue<Order*> readyTakeaway;
-	LinkedQueue<Order*> readyDineIn; 
-
-	
+	LinkedQueue<Order*> readyDineIn;
 	CancellableQueue<Order*> readyOVC;
 	LinkedQueue<Order*> readyOVG;
 	LinkedQueue<Order*> readyOVN;
 
-	
+	priQueue<Order*> overwaitOVG;
+
 	priQueue<Order*> inServiceOrders;
 
 	priQueue<Scooter*> scootersBack;
@@ -66,25 +72,34 @@ private:
 	LinkedQueue<Order*> cancelledOrders;
 	LinkedStack<Order*> finishedOrders;
 
+	//helper
+	string formatClean(double val, int percision);
+
 public:
 	Restaurant();
 	~Restaurant();
 
-	void RandomSimulation();
 	void RunSimulation();
-	bool LoadFromFile(string filename);
+
+	bool LoadFromFile(string filename, bool& isBonusFile);
 	void SaveOutput(string filename);
 
 	void ExecuteEvents();
 	void AddToPending(Order* pOrd);
 	void CancelOVC(int id);
 
-	// manage functions
-	void AssignOrders();
-	void FinishCooking();
-	void ServeOrders();
-	void FinishOrders();
-	void ReturnScooters();
+	void CheckScootersLists();         
+	void CheckFinishedDeliveryOrders();
+	void CheckFinishedDineInOrders();  
+
+	void AssignPendingToChef();        
+	void MoveFromCookingToReady();     
+
+	void AssignTable();                
+	void AssignScooter();              
+
+	void FinalizeTakeawayOrders();     
+	void UpdateOverwaitOrders();       
 
 	void ExtractAndMoveTable(Table* pTable, bool isShared);
 	bool IsSimulationComplete() const;

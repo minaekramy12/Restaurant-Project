@@ -1,6 +1,6 @@
 
 #include "Node.h"
-#include "PrecondViolatedExcep.h"
+#include "PrecondViolatedExcept.h"
 #ifndef _STACK_H_
 #define _STACK_H_
 
@@ -72,10 +72,10 @@ public:
 		}
 		return result;
 	}
-	T top() const throw(PrecondViolatedExcep)
+	T top() const throw(PrecondViolatedExcept)
 	{
 		if (isEmpty())
-			throw PrecondViolatedExcep("Stack is empty");
+			throw PrecondViolatedExcept("Stack is empty");
 		return topPtr->getItem();
 	}
 	int getCount() const

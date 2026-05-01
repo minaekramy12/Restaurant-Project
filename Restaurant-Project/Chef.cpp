@@ -24,12 +24,14 @@ void Chef::assignOrder(Order* ord, int currentTime) {
 	TF = ord->getTR();
 }
 
+void Chef::deductBusyTime(int t) { totalBusyTime -= t; }
+
+
 std::ostream& operator<<(std::ostream& os, const Chef* c) {
 	if (!c) return os;
 	os << c->ID;
 	return os;
 }
-
 // Getters
 int Chef::getSpeed() const { return speed; }
 Order* Chef::getCurrentOrder() const { return currOrder; }

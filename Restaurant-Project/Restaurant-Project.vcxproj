@@ -131,7 +131,7 @@
     <ClInclude Include="Chef.h" />
     <ClInclude Include="CancellablePriQueue.h" />
     <ClInclude Include="Order.h" />
-    <ClInclude Include="PrecondViolatedExcep.h" />
+    <ClInclude Include="PrecondViolatedExcept.h" />
     <ClInclude Include="PriQueue.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Queue.h" />
@@ -148,7 +148,6 @@
     <ClCompile Include="CancellableQueue.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Order.cpp" />
-    <ClCompile Include="RandomSimulation.cpp" />
     <ClCompile Include="Restaurant.cpp" />
     <ClCompile Include="Scooter.cpp" />
     <ClCompile Include="Table.cpp" />

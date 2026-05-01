@@ -25,6 +25,7 @@ public:
 	void setTF(int tf);
 	void setAvailable();
 	void assignOrder(Order* ord, int currentTime);
+	void deductBusyTime(int t);
 
 	friend std::ostream& operator<<(std::ostream& os, const Chef* c);
 

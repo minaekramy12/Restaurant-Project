@@ -70,7 +70,13 @@ public:
 	virtual Table* getTable() const { return nullptr; }
 	virtual Scooter* getScooter() const { return nullptr; }
 
-	friend std::ostream& operator<<(std::ostream& os, const Order* ord);
+	// Polymorphic Print function
+	virtual void printOrder(std::ostream& os) const;
+
+	friend std::ostream& operator<<(std::ostream& os, const Order* ord) {
+		if (ord) ord->printOrder(os);
+		return os;
+	}
 
 	virtual ~Order();
 };
@@ -82,6 +88,7 @@ private:
 	int duration;
 	bool share;
 	Table* table;
+
 public:
 	DineInOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
 	// Setters
@@ -101,21 +108,21 @@ class ODGOrder : public DineInOrder
 {
 public:
 	ODGOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
-	string GetType() const { return "ODG"; }
+	virtual string GetType() const { return "ODG"; }
 };
 
 class ODNOrder : public DineInOrder
 {
 public:
 	ODNOrder(int id, int tq, int sz, double pr, int seats, int dur, bool sh);
-	string GetType() const { return "ODN"; }
+	virtual string GetType() const { return "ODN"; }
 };
 
 class TakeawayOrder : public Order
 {
 public:
 	TakeawayOrder(int id, int tq, int sz, double pr);
-	string GetType() const { return "OT"; }
+	virtual string GetType() const { return "OT"; }
 };
 
 class DeliveryOrder : public Order
@@ -123,6 +130,7 @@ class DeliveryOrder : public Order
 private:
 	double distance;
 	Scooter* scooter;
+
 public:
 	DeliveryOrder(int id, int tq, int sz, double pr, double dis);
 
@@ -132,29 +140,62 @@ public:
 
 	// Getters
 	double getDistance() const;
-	Scooter* getScooter() const;
+	virtual Scooter* getScooter() const;
 };
 
 class OVC : public DeliveryOrder
 {
 public:
 	OVC(int id, int tq, int sz, double pr, double dis);
-	string GetType() const { return "OVC"; }
+	virtual string GetType() const { return "OVC"; }
 };
 
 class OVG : public DeliveryOrder
 {
 public:
 	OVG(int id, int tq, int sz, double pr, double dis);
-	double getPriority() const;
-	string GetType() const { return "OVG"; }
+	virtual double getPriority() const;
+	virtual string GetType() const { return "OVG"; }
 };
 
 class OVN : public DeliveryOrder
 {
 public:
 	OVN(int id, int tq, int sz, double pr, double dis);
-	string GetType() const { return "OVN"; }
+	virtual string GetType() const { return "OVN"; }
+};
+
+class COMBO : public DeliveryOrder {
+private:
+	int reqChefs;            //chefs it needs "1 to 4"
+	int reqScooters;         //scooters it needs "2+"
+
+	Chef* extraChefs[3];     //max 3 extra chefs (base Order class has the 1st CS chef)
+	int extraChefCount;
+
+	Scooter** extraScooters; //for remaining scooters (one in the base)
+	int extraScooterCount;
+
+public:
+	COMBO(int id, int tq, int sz, double pr, double dis, int rChefs, int rScooters);
+
+	~COMBO();
+
+	virtual string GetType() const;
+
+	int getReqChefs() const;
+	int getReqScooters() const;
+
+	void addExtraChef(Chef* pChef);
+	Chef** getExtraChefs();
+	int getExtraChefCount() const;
+
+	void addExtraScooter(Scooter* pScooter);
+	Scooter** getExtraScooters();
+	int getExtraScooterCount() const;
+
+	//print for COMBO
+	virtual void printOrder(std::ostream& os) const;
 };
 
 #endif

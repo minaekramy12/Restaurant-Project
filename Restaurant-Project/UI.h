@@ -20,7 +20,6 @@
 using std::cout, std::cin, std::string, std::endl;
 
 enum SimulationMode {
-	RANDOM = 0,
 	INTERACTIVE = 1,
 	SILENT = 2
 };
@@ -32,7 +31,6 @@ public:
 	string readInputFileName();
 	string readOutputFileName();
 	SimulationMode readSimulationMode();
-	int UIMenuRandom(int& totalOrdersGenerated);
 
 	void printTimestep(int timestep);
 	void waitForUser();
@@ -40,12 +38,16 @@ public:
 	void printMessage(string msg);
 
 	void printSystemStatus(
+		bool isBonus, 
 		LinkedQueue<Action*>* actionList,
+		LinkedQueue<Order*>* pendCombo, //Pending COMBO
 		LinkedQueue<Order*>* pendTakeaway, LinkedQueue<Order*>* pendODN, LinkedQueue<Order*>* pendODG,
 		CancellableQueue<Order*>* pendOVC, priQueue<Order*>* pendOVG, LinkedQueue<Order*>* pendOVN,
 		LinkedQueue<Chef*>* availCS, LinkedQueue<Chef*>* availCN,
 		CancellablePriQueue<Order*>* cookingOrders,
+		LinkedQueue<Order*>* readyCombo, //Ready COMBO
 		LinkedQueue<Order*>* readyTakeaway, LinkedQueue<Order*>* readyDineIn, CancellableQueue<Order*>* readyOVC, LinkedQueue<Order*>* readyOVG, LinkedQueue<Order*>* readyOVN,
+		priQueue<Order*>* overwaitOVG,   //Overwait OVG
 		priQueue<Scooter*>* availScooters,
 		TablePriQueue<Table*>* availTables, TablePriQueue<Table*>* busySharable, TablePriQueue<Table*>* busyNoShare,
 		priQueue<Order*>* inServiceOrders,

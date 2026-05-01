@@ -1,5 +1,5 @@
 #include "Node.h"
-#include "PrecondViolatedExcep.h"
+#include "PrecondViolatedExcept.h"
 #include <iostream>
 #ifndef _PRI_QUEUE_H_
 #define _PRI_QUEUE_H_
@@ -53,9 +53,9 @@ public:
         return true;
     }
 
-    T peekFront() const throw(PrecondViolatedExcep) {
+    T peekFront() const throw(PrecondViolatedExcept) {
         if (isEmpty())
-            throw PrecondViolatedExcep("Priority Queue is empty");
+            throw PrecondViolatedExcept("Priority Queue is empty");
         double val;
         return head->getItem(val);
     }

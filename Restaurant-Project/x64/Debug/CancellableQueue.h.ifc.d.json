@@ -6,7 +6,7 @@
         "Includes": [
             "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\queue.h",
             "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\node.h",
-            "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\precondviolatedexcep.h",
+            "c:\\users\\kareem\\desktop\\ds-repo\\restaurant-project\\precondviolatedexcept.h",
             "c:\\program files\\microsoft visual studio\\18\\community\\vc\\tools\\msvc\\14.50.35717\\include\\exception",
             "c:\\program files\\microsoft visual studio\\18\\community\\vc\\tools\\msvc\\14.50.35717\\include\\yvals.h",
             "c:\\program files\\microsoft visual studio\\18\\community\\vc\\tools\\msvc\\14.50.35717\\include\\yvals_core.h",
