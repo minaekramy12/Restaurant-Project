@@ -793,10 +793,11 @@ void Restaurant::SaveOutput(string filename) {
 
 string Restaurant::formatClean(double val, int percision) {
 	string s = format("{:.{}f}", val, percision);
-	s.erase(s.find_last_not_of('0') + 1, string::npos);
-	if (s.back() == '.') {
-		s.pop_back();
-	}
+	int lastValidIndx = s.length() - 1;
+	while (lastValidIndx > 0 && s[lastValidIndx] == '0')
+		--lastValidIndx;
+	if (s[lastValidIndx] == '.')
+		--lastValidIndx;
 
-	return s;
+	return s.substr(0, lastValidIndx + 1);
 }
