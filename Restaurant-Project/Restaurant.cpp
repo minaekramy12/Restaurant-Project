@@ -692,9 +692,12 @@ bool Restaurant::LoadFromFile(string filename, bool& isBonusFile) {
 
 
 void Restaurant::SaveOutput(string filename) {
+	int percision = 3;
+
+
 	std::ofstream outFile(filename);
 	if (!outFile.is_open()) return;
-	int percision = 3;
+	
 	outFile << "TF\tID\tTQ\tTA\tTR\tTS\tTi\tTC\tTW\tTserv\n";
 
 	int totalOrders = 0, totalODG = 0, totalODN = 0, totalOT = 0;

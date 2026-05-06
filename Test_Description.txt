@@ -1,0 +1,129 @@
+===================================================
+50act.txt: base test
+===================================================
+Filename:                  50act.txt
+CS Chefs:                  3
+CN Chefs:                  5
+CS Speed:                  3
+CN Speed:                  4
+Scooters:                  5
+Scooter speed:             50
+Orders before maintenance: 5
+Maintenance duration:      5
+Table config pairs:        4 4 2 8
+BONUS file? (Y/N):         N
+TOTAL actions:             50
+Cancel %:                  10
+
+===================================================
+100act.txt: Cancel Showcase
+*Chefs are extremely slow and Cancel % is HUGE to 
+maximum OVC cancellations*
+===================================================
+Filename:                  100act.txt
+CS Chefs:                  2
+CN Chefs:                  2
+CS Speed:                  1
+CN Speed:                  1
+Scooters:                  4
+Scooter speed:             40
+Orders before maintenance: 5
+Maintenance duration:      10
+Table config pairs:        3 4 2 6
+BONUS file? (Y/N):         N
+TOTAL actions:             100
+Cancel %:                  35
+
+===================================================
+150act.txt: Table Bottleneck
+*Fast kitchen, lots of scooters, but only 3 tiny tables*
+===================================================
+Filename:                  150act.txt
+CS Chefs:                  8
+CN Chefs:                  10
+CS Speed:                  4
+CN Speed:                  5
+Scooters:                  10
+Scooter speed:             60
+Orders before maintenance: 10
+Maintenance duration:      3
+Table config pairs:        2 2 1 3
+BONUS file? (Y/N):         N
+TOTAL actions:             150
+Cancel %:                  5
+
+===================================================
+200act.txt: Scooter Maintenance
+*Only 2 scooters that break every 2 orders for 25 timesteps*
+===================================================
+Filename:                  200act.txt
+CS Chefs:                  5
+CN Chefs:                  8
+CS Speed:                  3
+CN Speed:                  4
+Scooters:                  2
+Scooter speed:             50
+Orders before maintenance: 2
+Maintenance duration:      25
+Table config pairs:        5 4 4 6
+BONUS file? (Y/N):         N
+TOTAL actions:             200
+Cancel %:                  5
+
+===================================================
+250act.txt: Special Chef Shortage
+*12 Normal chefs, but only 1 Special chef for Grilled*
+===================================================
+Filename:                  250act.txt
+CS Chefs:                  1
+CN Chefs:                  12
+CS Speed:                  2
+CN Speed:                  5
+Scooters:                  8
+Scooter speed:             100
+Orders before maintenance: 8
+Maintenance duration:      5
+Table config pairs:        5 4 4 6
+BONUS file? (Y/N):         N
+TOTAL actions:             250
+Cancel %:                  15
+
+===================================================
+300act.txt: Bonus Test
+*Tests COMBO, Overwait (TH), and Scooter Rescues*
+===================================================
+Filename:                  300act.txt
+CS Chefs:                  4
+CN Chefs:                  5
+CS Speed:                  3
+CN Speed:                  3
+Scooters:                  6
+Scooter speed:             50
+Orders before maintenance: 5
+Maintenance duration:      8
+Table config pairs:        4 4 3 6
+BONUS file? (Y/N):         Y
+Overwait Threshold (TH):   25
+Failure Probability:       15
+TOTAL actions:             300
+Cancel %:                  5
+
+===================================================
+800act.txt: General Test
+*file with Bonus enabled*
+===================================================
+Filename:                  800act.txt
+CS Chefs:                  10
+CN Chefs:                  15
+CS Speed:                  4
+CN Speed:                  5
+Scooters:                  20
+Scooter speed:             60
+Orders before maintenance: 8
+Maintenance duration:      5
+Table config pairs:        8 4 6 6 4 8
+BONUS file? (Y/N):         Y
+Overwait Threshold (TH):   20
+Failure Probability:       10
+TOTAL actions:             800
+Cancel %:                  10
